@@ -1,75 +1,149 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { Link } from "expo-router";
+import { FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { useTareas } from "../../components/TareasContext";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const { tareas, eliminarTarea, cambioEstado } = useTareas();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Mis Tareas</Text>
+
+        <Link href="/nueva-tarea" asChild>
+          <Pressable style={styles.botonNuevaTarea}>
+            <Text style={styles.botonTexto}>+ Nueva tarea</Text>
+          </Pressable>
+        </Link>
+  
+
+        {tareas.length === 0 ? (
+          <Text style={styles.noTasks}>No hay tareas aún.</Text>
+        ) : (
+          <FlatList
+            data={tareas}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Text style={styles.titulo}>{item.titulo}</Text>
+                <Text style={styles.descripcion}>{item.descripcion}</Text>
+                
+                <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>
+                  Prioridad: {item.prioridad}
+                </Text>
+
+                <View style={styles.estadoContainer}>
+                  <Text style={[styles.etiqueta, styles[`estado_${item.estado}`]]}>Estado: {item.estado}</Text>
+                  <Switch
+                    value={item.estado === "completada"}
+                    onValueChange={() => cambioEstado(item.id)}
+                    trackColor={{ false: "#ccc", true: "#4cd137" }}
+                    thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
+                  />
+
+                </View>
+
+                <Pressable
+                  style={styles.eliminarBtn}
+                  onPress={() => eliminarTarea(item.id)}
+                >
+                  <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
+                </Pressable>
+
+              </View>
+            )}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  botonNuevaTarea: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignSelf: "center",
+    marginBottom: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  botonTexto: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    padding: 25,
+    gap: 12,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  noTasks: {
+    marginTop: 20,
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#888",
+  },
+  card: {
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  estadoContainer: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: 5,
+  },
+  titulo: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  descripcion: {
+    fontSize: 18,
+    marginBottom: 5,
+    marginTop: 5,
+    color: "#555",
+  },
+  link: {
+    marginTop: 20,
+    marginBottom: 10,
+    alignSelf: "center",
+  },
+  crearTarea: {
+    fontSize: 18,
+    color: "blue",
+  },
+  eliminarBtn: {
+    marginTop: 10,
+    backgroundColor: "#ff4d4d",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  eliminarBtnTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  etiqueta: {
+  fontSize: 14,
+  fontWeight: "600",
+  marginTop: 4,
+  },
+  prioridad_alta: { fontSize:17, color: "#d32f2f" }, // rojo
+  prioridad_media: { fontSize:17, color: "#f9a825" }, // amarillo
+  prioridad_baja: { fontSize:17, color: "#388e3c" }, // verde
+  estado_pendiente: { fontSize:17, color: "#e67e22" }, // naranja
+  estado_completada: { fontStyle: "italic", fontSize:17, color: "#3348ff" }, //azul
+
 });
+

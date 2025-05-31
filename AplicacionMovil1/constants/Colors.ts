@@ -6,6 +6,7 @@
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
+/* Colores para los temas claro y oscuro */
 export const Colors = {
   light: {
     text: '#11181C',
