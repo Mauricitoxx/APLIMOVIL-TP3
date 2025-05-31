@@ -1,10 +1,11 @@
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 import { useTareas } from "../../components/TareasContext";
 import { Tarea } from "../../types/Tarea";
+import uuid from 'react-native-uuid';
 
 export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
@@ -21,7 +22,7 @@ export default function NuevaTarea() {
         }
 
         const nuevaTarea: Tarea = {
-        id: uuidv4(),
+        id: uuid.v4(),
         titulo,
         descripcion,
         prioridad,
@@ -34,7 +35,7 @@ export default function NuevaTarea() {
 
     return(
         <View style={styles.container}>
-            <center><h2>Crear una nueva tarea</h2></center>
+            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Crear una nueva Tarea</Text>
             <TextInput
                 placeholder="Título"
                 value={titulo}
@@ -48,7 +49,7 @@ export default function NuevaTarea() {
                 multiline
                 style={[styles.input, { height: 100 }]}
             />
-            <h3>Seleccione el nivel de prioridad de la tarea: </h3>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 10}}>Seleccione el nivel de prioridad de la tarea:</Text>
             <Picker
                 selectedValue={prioridad}
                 onValueChange={(value) => setPrioridad(value)}
