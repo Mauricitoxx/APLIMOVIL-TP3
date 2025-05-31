@@ -1,7 +1,7 @@
 /* Index representa la Ventana Inicial (Home) */
 
 import { Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { useTareas } from "../components/TareasContext";
 
 export default function HomeScreen() {
@@ -26,20 +26,23 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <TouchableOpacity onPress={() => cambioEstado(item.id)}>
-                <Text style={[styles.titulo, item.estado === "completada" && styles.completada]}>
-                  ✅ {item.titulo}
-                </Text>
-              </TouchableOpacity>
+              <Text style={styles.titulo}>{item.titulo}</Text>
               <Text style={styles.descripcion}>{item.descripcion}</Text>
               
               <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>
                 Prioridad: {item.prioridad}
               </Text>
-              <Text style={[styles.etiqueta, styles[`estado_${item.estado}`]]}>
-                Estado: {item.estado}
-              </Text>
 
+              <View style={styles.estadoContainer}>
+                <Text style={[styles.etiqueta, styles[`estado_${item.estado}`]]}>Estado: {item.estado}</Text>
+                <Switch
+                  value={item.estado === "completada"}
+                  onValueChange={() => cambioEstado(item.id)}
+                  trackColor={{ false: "#ccc", true: "#4cd137" }}
+                  thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
+                />
+
+              </View>
 
               <Pressable
                 style={styles.eliminarBtn}
@@ -92,9 +95,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
   },
-  completada: {
-  textDecorationLine: "line-through",
-  color: "#888",
+  estadoContainer: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: 5,
   },
   titulo: {
     fontSize: 20,
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
   prioridad_alta: { fontSize:17, color: "#d32f2f" }, // rojo
   prioridad_media: { fontSize:17, color: "#f9a825" }, // amarillo
   prioridad_baja: { fontSize:17, color: "#388e3c" }, // verde
-  estado_pendiente: { fontStyle: "italic", fontSize:17, color: "#e67e22" }, // naranja
-  estado_completada: { textDecorationLine: "line-through", fontSize:17, color: "#888" },
+  estado_pendiente: { fontSize:17, color: "#e67e22" }, // naranja
+  estado_completada: { fontStyle: "italic", fontSize:17, color: "#3348ff" },
 
 });
