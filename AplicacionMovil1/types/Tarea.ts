@@ -8,3 +8,18 @@ export interface Tarea {
   prioridad: Prioridad;
   estado: Estado;
 }
+
+export interface CarpetaTareas {
+  id: string;
+  nombre: string;
+  tareas: Tarea[];
+}
+
+export interface usuario {
+  id: string;
+  nombre: string;
+  email: string;
+  contraseña: string;
+  carpetas: CarpetaTareas[];
+  tareas: Tarea[];
+}
