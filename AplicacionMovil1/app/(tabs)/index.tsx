@@ -1,10 +1,25 @@
 import { Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Switch, Text, View, Alert } from "react-native";
 import { useTareas } from "../../components/TareasContext";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
+
+  const confirmarEliminacion = (id: string) => {
+    Alert.alert(
+      "Eliminar tarea",
+      "¿Estás seguro de que deseas eliminar esta tarea?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: () => eliminarTarea(id),
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -12,21 +27,25 @@ export default function HomeScreen() {
           <Text style={styles.title}>Mis Tareas</Text>
 
         <Link href="/nueva-tarea" asChild>
-          <Pressable style={styles.botonNuevaTarea}>
+          <Pressable style={styles.botonNuevaTarea} accessibilityLabel="Crear nueva tarea">
             <Text style={styles.botonTexto}>+ Nueva tarea</Text>
           </Pressable>
         </Link>
-  
 
         {tareas.length === 0 ? (
           <Text style={styles.noTasks}>No hay tareas aún.</Text>
         ) : (
           <FlatList
             data={tareas}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.card}>
                 <Text style={styles.titulo}>{item.titulo}</Text>
+
+                <Link href={`/editar-tarea/${item.id.toString()}`}>
+                  <Text style={{ color: "blue", marginTop: 8 }}>Editar tarea</Text>
+                </Link>
+
                 <Text style={styles.descripcion}>{item.descripcion}</Text>
                 
                 <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>

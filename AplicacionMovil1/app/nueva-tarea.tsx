@@ -29,7 +29,7 @@ export default function NuevaTarea() {
         };
 
         agregarTarea(nuevaTarea);
-        router.back();
+        router.replace("/");
     };
 
     return(
