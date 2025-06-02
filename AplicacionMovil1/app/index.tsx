@@ -3,82 +3,83 @@
 import { Feather } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTareas } from "../components/TareasContext";
 
 export default function HomeScreen() {
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
 
+  /*No lo toma eliminarTarea, directamente el boton no funciona */  
   const confirmarEliminacion = (id: string) => {
     Alert.alert(
-      "Eliminar tarea",
+      "¿Eliminar tarea?",
       "¿Estás seguro de que deseas eliminar esta tarea?",
       [
         { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => eliminarTarea(id),
-        },
+        { text: "Eliminar", style: "destructive", onPress: () => eliminarTarea(id) },
       ]
     );
   };
 
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mis Tareas</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Mis Tareas</Text>
 
-      <Link href="/nueva-tarea" asChild>
-        <Pressable style={styles.botonNuevaTarea}>
-          <Text style={styles.botonTexto}>+ Nueva tarea</Text>
-        </Pressable>
-      </Link>
+        <Link href="/nueva-tarea" asChild>
+          <Pressable style={styles.botonNuevaTarea} accessibilityLabel="Crear nueva tarea">
+            <Text style={styles.botonTexto}>+ Nueva tarea</Text>
+          </Pressable>
+        </Link>
 
-      {tareas.length === 0 ? (
-        <Text style={styles.noTasks}>No hay tareas aún.</Text>
-      ) : (
-        <FlatList
-          data={tareas}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              
-              <Link href={{ pathname: "/editar-tarea/[id]", params: { id: item.id }}}>
-                <Pressable style={styles.icon}>
-                  <Feather name="edit" size={20} color="#007BFF" />
+        {tareas.length === 0 ? (
+          <Text style={styles.noTasks}>No hay tareas aún.</Text>
+        ) : (
+          <FlatList
+            data={tareas}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                
+                <Link href={{ pathname: "/editar-tarea/[id]", params: { id: item.id }}}>
+                  <Pressable style={styles.icon}>
+                    <Feather name="edit" size={20} color="#007BFF" />
+                  </Pressable>
+                </Link>
+                
+                <Text style={styles.titulo}>{item.titulo}</Text>
+
+                <Text style={styles.descripcion}>{item.descripcion}</Text>
+                
+                <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>
+                  Prioridad: {item.prioridad}
+                </Text>
+
+                <View style={styles.estadoContainer}>
+                  <Text style={[styles.etiqueta, styles[`estado_${item.estado}`]]}>Estado: {item.estado}</Text>
+                  <Switch
+                    value={item.estado === "completada"}
+                    onValueChange={() => cambioEstado(item.id)}
+                    trackColor={{ false: "#ccc", true: "#4cd137" }}
+                    thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
+                  />
+
+                </View>
+
+                <Pressable
+                  style={styles.eliminarBtn}
+                  onPress={() => eliminarTarea(item.id.toString())}
+                >
+                  <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
                 </Pressable>
-              </Link>
-              
-              <Text style={styles.titulo}>{item.titulo}</Text>
-
-              <Text style={styles.descripcion}>{item.descripcion}</Text>
-              
-              <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>
-                Prioridad: {item.prioridad}
-              </Text>
-
-              <View style={styles.estadoContainer}>
-                <Text style={[styles.etiqueta, styles[`estado_${item.estado}`]]}>Estado: {item.estado}</Text>
-                <Switch
-                  value={item.estado === "completada"}
-                  onValueChange={() => cambioEstado(item.id)}
-                  trackColor={{ false: "#ccc", true: "#4cd137" }}
-                  thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
-                />
 
               </View>
-
-              <Pressable
-                style={styles.eliminarBtn}
-                onPress={() => eliminarTarea(item.id)}
-              >
-                <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
-              </Pressable>
-
-            </View>
-          )}
-        />
-      )}
-    </View>
+            )}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -129,12 +130,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 1,
-    padding: 8,
+    padding: 10,
   },
   titulo: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 5,
+    color: "#555"
   },
   descripcion: {
     fontSize: 18,
@@ -173,6 +175,7 @@ const styles = StyleSheet.create({
   prioridad_alta: { fontSize:17, color: "#d32f2f" }, // rojo
   prioridad_media: { fontSize:17, color: "#f9a825" }, // amarillo
   prioridad_baja: { fontSize:17, color: "#388e3c" }, // verde
+  prioridad_:{},
   estado_pendiente: { fontSize:17, color: "#e67e22" }, // naranja
   estado_completada: { fontStyle: "italic", fontSize:17, color: "#3348ff" },
 

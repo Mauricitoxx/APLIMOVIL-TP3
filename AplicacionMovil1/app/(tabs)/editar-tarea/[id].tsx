@@ -3,7 +3,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useTareas } from "../../components/TareasContext";
+import { useTareas } from "../../../components/TareasContext";
 
 export default function EditarTarea() {
   const { id } = useLocalSearchParams<{ id: string }>();

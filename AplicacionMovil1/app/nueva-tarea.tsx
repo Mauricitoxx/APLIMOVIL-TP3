@@ -1,10 +1,11 @@
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
-import { v4 as uuidv4 } from "uuid";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import uuid from 'react-native-uuid';
+import { Tarea } from "..//types/Tarea";
 import { useTareas } from "../components/TareasContext";
-import { Tarea } from "../types/Tarea";
 
 export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
@@ -12,20 +13,28 @@ export default function NuevaTarea() {
 
     const [titulo, setTitulo] = useState("");
     const [descripcion, setDescripcion] = useState("")
-    const [prioridad, setPrioridad] = useState<Tarea["prioridad"]>("media");
+    const [prioridad, setPrioridad] = useState<Tarea["prioridad"]>("");
+    const [error, setError] = useState("");
 
     const crearTarea = () => {
         if (!titulo.trim()) {
-        Alert.alert("Validación", "El título es obligatorio.");
-        return;
+          setError("El título no puede estar vacío.");
+          return;
         }
 
+        if (!["alta", "media", "baja"].includes(prioridad)) {
+          setError("Debes seleccionar una prioridad válida.");
+          return;
+        }
+
+        setError("");
+
         const nuevaTarea: Tarea = {
-        id: uuidv4(),
-        titulo,
-        descripcion,
-        prioridad,
-        estado: "pendiente",
+          id: uuid.v4(),
+          titulo,
+          descripcion,
+          prioridad,
+          estado: "pendiente",
         };
 
         agregarTarea(nuevaTarea);
@@ -33,8 +42,9 @@ export default function NuevaTarea() {
     };
 
     return(
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.container}>
-            <center><h2>Crear una nueva tarea</h2></center>
+            <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: "center"}}>Crear una nueva Tarea</Text>
             <TextInput
                 placeholder="Título"
                 value={titulo}
@@ -48,18 +58,25 @@ export default function NuevaTarea() {
                 multiline
                 style={[styles.input, { height: 100 }]}
             />
-            <h3>Seleccione el nivel de prioridad de la tarea: </h3>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 10, marginBottom: 10}}>Seleccione el nivel de prioridad de la tarea:</Text>
             <Picker
                 selectedValue={prioridad}
                 onValueChange={(value) => setPrioridad(value)}
                 style={styles.picker}
             >
+                <Picker.Item label="Nivel de Prioridad" value="" />
                 <Picker.Item label="Alta" value="alta" />
                 <Picker.Item label="Media" value="media" />
                 <Picker.Item label="Baja" value="baja" />
             </Picker>
+
+            {error ? (
+              <Text style={{ color: "red", fontWeight: "bold", alignSelf: "center"}}>{error}</Text>
+            ) : null}
+
             <Button title="Crear tarea" onPress={crearTarea} />
         </View>
+      </SafeAreaView>
     )
 }
 
