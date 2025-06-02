@@ -1,13 +1,24 @@
 /* Index representa la Ventana Inicial (Home) */
 
 import { Feather } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTareas } from "../components/TareasContext";
 
 export default function HomeScreen() {
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
+  const [filtroEstado, setFiltroEstado] = useState<"todos" | "pendiente" | "completada">("todos");
+  const [filtroPrioridad, setFiltroPrioridad] = useState<"" | "alta" | "media" | "baja">("");
+
+  const tareasFiltradas = tareas.filter(t => {
+    const coincideEstado = filtroEstado === "todos" || t.estado === filtroEstado;
+    const coincidePrioridad = !filtroPrioridad || t.prioridad === filtroPrioridad;
+    return coincideEstado && coincidePrioridad;
+  });
+
 
   /*No lo toma eliminarTarea, directamente el boton no funciona */  
   const confirmarEliminacion = (id: string) => {
@@ -33,11 +44,35 @@ export default function HomeScreen() {
           </Pressable>
         </Link>
 
+        
+        <Text style={{ fontWeight: "bold", marginTop: 10 }}>Filtrar por Estado:</Text>
+        <Picker
+          selectedValue={filtroEstado}
+          onValueChange={(value) => setFiltroEstado(value)}
+          style={{ backgroundColor: "#f0f0f0", marginBottom: 10, padding: 5, borderRadius: 8 }}
+        >
+          <Picker.Item label="Todos" value="todos" />
+          <Picker.Item label="Pendiente" value="pendiente" />
+          <Picker.Item label="Completada" value="completada" />
+        </Picker>
+
+        <Text style={{ fontWeight: "bold" }}>Filtrar por Prioridad:</Text>
+        <Picker
+          selectedValue={filtroPrioridad}
+          onValueChange={(value) => setFiltroPrioridad(value)}
+          style={{ backgroundColor: "#f0f0f0", marginBottom: 10, padding: 5, borderRadius: 8 }}
+        >
+          <Picker.Item label="Todas" value="" />
+          <Picker.Item label="Alta" value="alta" />
+          <Picker.Item label="Media" value="media" />
+          <Picker.Item label="Baja" value="baja" />
+        </Picker>
+
         {tareas.length === 0 ? (
           <Text style={styles.noTasks}>No hay tareas aún.</Text>
         ) : (
           <FlatList
-            data={tareas}
+            data={tareasFiltradas}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.card}>
@@ -50,7 +85,7 @@ export default function HomeScreen() {
                 
                 <Text style={styles.titulo}>{item.titulo}</Text>
 
-                <Text style={styles.descripcion}>{item.descripcion}</Text>
+                <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
                 
                 <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>
                   Prioridad: {item.prioridad}
