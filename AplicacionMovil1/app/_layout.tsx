@@ -1,10 +1,10 @@
 import { TareasProvider } from '@/components/TareasContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -14,18 +14,21 @@ export default function RootLayout() {
 
   if (!loaded) {
     // Async font loading only occurs in development.
-    return null;
+    return (
+      <SafeAreaProvider>
+        <TareasProvider>
+          <StatusBar style="auto" />
+        </TareasProvider>
+      </SafeAreaProvider>
+    );
   }
 
   return (
-    <TareasProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </TareasProvider>
+    <SafeAreaProvider>
+      <TareasProvider>
+            <Slot />
+            <StatusBar style="auto" />
+      </TareasProvider>
+    </SafeAreaProvider>
   );
 }

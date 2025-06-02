@@ -2,10 +2,9 @@ import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { v4 as uuidv4 } from "uuid";
+import uuid from 'react-native-uuid';
 import { useTareas } from "../../components/TareasContext";
 import { Tarea } from "../../types/Tarea";
-import uuid from 'react-native-uuid';
 
 export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
@@ -17,8 +16,13 @@ export default function NuevaTarea() {
 
     const crearTarea = () => {
         if (!titulo.trim()) {
-        Alert.alert("Validación", "El título es obligatorio.");
-        return;
+          Alert.alert("Validación", "El título es obligatorio.");
+          return;
+        }
+
+        if (!["alta", "media", "baja"].includes(prioridad)) {
+          Alert.alert("Error", "Debe seleccionar una prioridad válida");
+          return;
         }
 
         const nuevaTarea: Tarea = {
