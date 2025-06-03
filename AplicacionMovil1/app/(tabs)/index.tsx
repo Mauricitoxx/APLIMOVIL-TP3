@@ -1,33 +1,38 @@
 import { Feather } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTareas } from "../../components/TareasContext";
 
 export default function HomeScreen() {
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
+  const [filtroEstado, setFiltroEstado] = useState<"todos" | "pendiente" | "completada">("todos");
+  const [filtroPrioridad, setFiltroPrioridad] = useState<"" | "alta" | "media" | "baja">("");
 
+  const tareasFiltradas = tareas.filter(t => {
+    const coincideEstado = filtroEstado === "todos" || t.estado === filtroEstado;
+    const coincidePrioridad = !filtroPrioridad || t.prioridad === filtroPrioridad;
+    return coincideEstado && coincidePrioridad;
+  });
+
+
+  /*No lo toma eliminarTarea, directamente el boton no funciona */  
   const confirmarEliminacion = (id: string) => {
     Alert.alert(
-      "Confirmar eliminación",
+      "¿Eliminar tarea?",
       "¿Estás seguro de que deseas eliminar esta tarea?",
       [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Eliminar",
-          onPress: () => eliminarTarea(id),
-          style: "destructive",
-        },
+        { text: "Cancelar", style: "cancel" },
+        { text: "Eliminar", style: "destructive", onPress: () => eliminarTarea(id) },
       ]
     );
   };
 
-  
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, /*backgroundColor: '#ADB2D4'*/ }}>
         <View style={styles.container}>
           <Text style={styles.title}>Mis Tareas</Text>
 
@@ -37,24 +42,50 @@ export default function HomeScreen() {
           </Pressable>
         </Link>
 
+        
+        <Text style={{ fontWeight: "bold", marginTop: 10, fontSize: 20 }}>Filtrar por Estado:</Text>
+        <Picker
+          selectedValue={filtroEstado}
+          onValueChange={(value) => setFiltroEstado(value)}
+          style={{ /*backgroundColor: "#BDDDE4", borderColor: "#BDDDE4",*/ marginBottom: 10, padding: 8, borderRadius: 8 }}
+        >
+          <Picker.Item label="Todos" value="todos" />
+          <Picker.Item label="Pendiente" value="pendiente" />
+          <Picker.Item label="Completada" value="completada" />
+        </Picker>
+
+        <Text style={{ fontWeight: "bold" }}>Filtrar por Prioridad:</Text>
+        <Picker
+          selectedValue={filtroPrioridad}
+          onValueChange={(value) => setFiltroPrioridad(value)}
+          style={{ /*backgroundColor: "#BDDDE4", borderColor: "#BDDDE4",*/ marginBottom: 10, padding: 8, borderRadius: 8 }}
+        >
+          <Picker.Item label="Todas" value="" />
+          <Picker.Item label="Alta" value="alta" />
+          <Picker.Item label="Media" value="media" />
+          <Picker.Item label="Baja" value="baja" />
+        </Picker>
+
         {tareas.length === 0 ? (
           <Text style={styles.noTasks}>No hay tareas aún.</Text>
         ) : (
           <FlatList
-            data={tareas}
+            data={tareasFiltradas}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.card}>
                 
-                <Link href={{ pathname: "/editar-tarea/[id]", params: { id: item.id }}}>
+                <Link href={{ pathname: "/editar-tarea/[id]", params: { id: item.id } }}
+                  replace
+                >
                   <Pressable style={styles.icon}>
-                    <Feather name="edit" size={20} color="#007BFF" />
+                    <Feather name="edit" size={20} color="#000000" />
                   </Pressable>
                 </Link>
                 
                 <Text style={styles.titulo}>{item.titulo}</Text>
 
-                <Text style={styles.descripcion}>{item.descripcion}</Text>
+                <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
                 
                 <Text style={[styles.etiqueta, styles[`prioridad_${item.prioridad}`]]}>
                   Prioridad: {item.prioridad}
@@ -73,7 +104,7 @@ export default function HomeScreen() {
 
                 <Pressable
                   style={styles.eliminarBtn}
-                  onPress={() => confirmarEliminacion(item.id)}
+                  onPress={() => eliminarTarea(item.id.toString())}
                 >
                   <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
                 </Pressable>
@@ -89,12 +120,14 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   botonNuevaTarea: {
-    backgroundColor: "#007AFF",
+    /*backgroundColor: "#9EC6F3",*/
+    backgroundColor: "blue",
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
     borderRadius: 8,
     alignSelf: "center",
     marginBottom: 20,
+    marginTop:10,
   },
   botonTexto: {
     color: "white",
@@ -103,12 +136,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 25,
+    padding: 30,
     gap: 12,
   },
   title: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: "bold",
+    alignSelf: "center"
   },
   noTasks: {
     marginTop: 20,
@@ -119,9 +153,11 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderWidth: 1,
-    borderColor: "#ccc",
+    /*borderColor: "#FFF1D5",*/
     borderRadius: 8,
     marginBottom: 16,
+    marginRight: 5,
+    /*backgroundColor: "#FFF1D5",*/
     position: "relative",
   },
   estadoContainer: {
@@ -134,12 +170,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 1,
-    padding: 8,
+    padding: 10,
   },
   titulo: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 5,
+    color: "#555"
   },
   descripcion: {
     fontSize: 18,

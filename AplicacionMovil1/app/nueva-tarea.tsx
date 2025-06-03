@@ -44,7 +44,7 @@ export default function NuevaTarea() {
     return(
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.container}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: "center"}}>Crear una nueva Tarea</Text>
+            <Text style={{ fontSize: 30, fontWeight: 'bold', alignSelf: "center", margin: 20}}>Crear una nueva Tarea</Text>
             <TextInput
                 placeholder="Título"
                 value={titulo}
