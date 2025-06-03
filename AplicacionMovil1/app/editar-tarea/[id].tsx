@@ -47,14 +47,19 @@ export default function EditarTarea() {
 
     setError("");
 
-    editarTarea(id!, {
-      ...tarea!,
-      titulo,
-      descripcion,
-      prioridad,
-    });
+    // Aquí se realiza la modificación de la tarea:
+    editarTarea(
+      id!, // <-- este es el id de la tarea a modificar
+      {
+        ...tarea!, // <-- copia todos los campos originales de la tarea
+        titulo,    // <-- actualiza el título
+        descripcion, // <-- actualiza la descripción
+        prioridad,   // <-- actualiza la prioridad
+        carpetaId: tarea?.carpetaId ? String(tarea.carpetaId) : "", // <-- mantiene el carpetaId
+      }
+    );
 
-    router.replace("/");
+    router.replace({ pathname: "/carpeta/[id]", params: { id: tarea?.carpetaId ? String(tarea.carpetaId) : "" } });
   };
 
   if (!componenteListo) return null;

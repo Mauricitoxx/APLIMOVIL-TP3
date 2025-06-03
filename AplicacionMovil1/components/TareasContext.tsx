@@ -13,10 +13,20 @@ type TareasContextType = {
 const TareasContext = createContext<TareasContextType | null>(null);
 export const TareasProvider = ({ children }: any) => {
   const [tareas, setTareas] = useState<Tarea[]>([]);
+  const [ultimoId, setUltimoId] = useState<number>(0);
 
   useEffect(() => {
     AsyncStorage.getItem("tareas").then(data => {
-      if (data) setTareas(JSON.parse(data));
+      if (data) {
+        const tareasCargadas: Tarea[] = JSON.parse(data);
+        setTareas(tareasCargadas);
+        // Buscar el id más alto para continuar autoincrementando
+        const maxId = tareasCargadas.reduce((max, t) => {
+          const n = Number(t.id);
+          return !isNaN(n) && n > max ? n : max;
+        }, 0);
+        setUltimoId(maxId);
+      }
     });
   }, []);
 
@@ -25,10 +35,15 @@ export const TareasProvider = ({ children }: any) => {
   }, [tareas]);
 
   const agregarTarea = (nuevaTarea: Tarea) => {
-    setTareas((prev) => [...prev, nuevaTarea])
+    const nuevoId = ultimoId + 1;
+    const tareaConId = { ...nuevaTarea, id: String(nuevoId) };
+    setUltimoId(nuevoId);
+    console.log("Agregando tarea:", tareaConId);
+    setTareas((prev) => [...prev, tareaConId]);
   };
 
   const cambioEstado = (id: string) => {
+    console.log("Cambiando estado de tarea:", id);
     setTareas(prev =>
       prev.map(t => 
         t.id === id
@@ -39,6 +54,7 @@ export const TareasProvider = ({ children }: any) => {
   }
 
   const editarTarea = (id: string, tareaEditada: Tarea) => {
+    console.log("Editando tarea:", id, tareaEditada);
     setTareas(prev =>
       prev.map(t =>
         t.id == id ? { ...t, ...tareaEditada} : t
@@ -46,10 +62,16 @@ export const TareasProvider = ({ children }: any) => {
     )
   }
 
-  const eliminarTarea = (id: string) => {
-    setTareas((prev) => prev.filter((tarea) => tarea.id !== id));
+  const eliminarTarea = (id: string, carpetaID?: string) => {
+    console.log("Eliminando tarea:", id, "carpetaID:", carpetaID);
+    setTareas((prev) => {
+      const nuevas = prev.filter((tarea) =>
+        tarea.id !== id && (carpetaID ? tarea.carpetaId !== carpetaID : true)
+      );
+      console.log("Tareas después de eliminar:", nuevas);
+      return nuevas;
+    });
   };
-
 
   return (
     <TareasContext.Provider value={{ tareas, agregarTarea, eliminarTarea, cambioEstado, editarTarea }}>

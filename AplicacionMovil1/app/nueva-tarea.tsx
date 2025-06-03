@@ -1,15 +1,15 @@
 import { Picker } from "@react-native-picker/picker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import uuid from 'react-native-uuid';
 import { Tarea } from "..//types/Tarea";
 import { useTareas } from "../components/TareasContext";
 
 export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
     const router = useRouter();
+    const { carpetaId } = useLocalSearchParams<{ carpetaId?: string }>();
 
     const [titulo, setTitulo] = useState("");
     const [descripcion, setDescripcion] = useState("")
@@ -29,12 +29,14 @@ export default function NuevaTarea() {
 
         setError("");
 
+        // El id será asignado automáticamente en el contexto, pero para TypeScript, puedes poner un valor temporal
         const nuevaTarea: Tarea = {
-          id: uuid.v4(),
+          id: "", // El contexto lo sobrescribirá con el autoincremental
           titulo,
           descripcion,
           prioridad,
           estado: "pendiente",
+          carpetaId: carpetaId ? String(carpetaId) : "",
         };
 
         agregarTarea(nuevaTarea);
