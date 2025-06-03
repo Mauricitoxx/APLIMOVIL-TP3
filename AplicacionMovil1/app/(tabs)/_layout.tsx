@@ -1,7 +1,10 @@
+
 import { TareasProvider } from '@/components/TareasContext';
+import { CarpetaProvider } from '@/components/CarpetaContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -13,23 +16,47 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
-    return (
-      <SafeAreaProvider>
-        <TareasProvider>
-          <StatusBar style="auto" />
-        </TareasProvider>
-      </SafeAreaProvider>
-    );
+    return null;
   }
 
   return (
     <SafeAreaProvider>
-      <TareasProvider>
-            <Slot />
+      <CarpetaProvider>
+        <TareasProvider>
+          <ThemeProvider value={DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              
+              <Stack.Screen 
+                name="nueva-tarea" 
+                options={{ 
+                  presentation: 'modal', 
+                  title: 'Crear Nueva Tarea' 
+                }} 
+              />
+
+              <Stack.Screen 
+                name="nueva-carpeta" 
+                options={{ 
+                  presentation: 'modal', // Opcional
+                  title: 'Crear Nueva Carpeta' 
+                }} 
+              />
+
+              <Stack.Screen 
+                name="editar-tarea/[id]" 
+                options={{ 
+                  presentation: 'modal', 
+                  title: 'Editar Tarea' 
+                }} 
+              />
+
+              <Stack.Screen name="+not-found" />
+            </Stack>
             <StatusBar style="auto" />
-      </TareasProvider>
+          </ThemeProvider>
+        </TareasProvider>
+      </CarpetaProvider>
     </SafeAreaProvider>
   );
 }
-

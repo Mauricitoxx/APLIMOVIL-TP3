@@ -46,7 +46,7 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <View style={styles.card}>
                 
-                <Link href={{ pathname: "/editar-tarea/[id]", params: { id: item.id }}}>
+                <Link href={{ pathname: "/editar-tarea/[id]", params: { id: item.id } }} asChild>
                   <Pressable style={styles.icon}>
                     <Feather name="edit" size={20} color="#007BFF" />
                   </Pressable>
