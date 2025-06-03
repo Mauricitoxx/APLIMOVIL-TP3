@@ -59,14 +59,7 @@ export default function CarpetaDetalle() {
   };
 
   // Nueva función para editar tarea desde aquí
-  const handleEditarTarea = (tarea: Tarea, nuevosDatos: Partial<Tarea>) => {
-    const tareaEditada: Tarea = {
-      ...tarea,
-      ...nuevosDatos,
-      carpetaId: tarea.carpetaId ? String(tarea.carpetaId) : "",
-    };
-    editarTarea(tarea.id, tareaEditada);
-  };
+  
 
   return (
     <View style={styles.container}>
