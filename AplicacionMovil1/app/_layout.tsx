@@ -1,10 +1,12 @@
 import { TareasProvider } from '@/components/TareasContext';
+import { CarpetaProvider } from '../components/CarpetaContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native'; 
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack } from 'expo-router'; 
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -13,19 +15,44 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+    return null; 
   }
 
   return (
-    <TareasProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </TareasProvider>
+    <SafeAreaProvider>
+      <CarpetaProvider>
+        <TareasProvider>
+          <ThemeProvider value={DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="nueva-carpeta"
+                options={{
+                  title: 'Crear Nueva Carpeta',
+                  headerShown: true
+                }}
+              />
+              <Stack.Screen
+                name="nueva-tarea"
+                options={{
+                  presentation: 'modal',
+                  title: 'Crear Nueva Tarea'
+                }}
+              />
+             
+              <Stack.Screen
+                name="editar-tarea/[id]"
+                options={{
+                  presentation: 'modal', 
+                  title: 'Editar Tarea'
+                }}
+              />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </TareasProvider>
+      </CarpetaProvider>
+    </SafeAreaProvider>
   );
 }
