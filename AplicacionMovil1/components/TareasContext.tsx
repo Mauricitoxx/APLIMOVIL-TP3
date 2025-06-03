@@ -7,6 +7,7 @@ type TareasContextType = {
     agregarTarea: (t: Tarea) => void;
     eliminarTarea: (id: string) => void;
     cambioEstado: (id: string) => void;
+    editarTarea: (id: string, t: Tarea) => void;
 };
 
 const TareasContext = createContext<TareasContextType | null>(null);
@@ -37,11 +38,21 @@ export const TareasProvider = ({ children }: any) => {
     )
   }
 
-  const eliminarTarea = (id: string) =>
-    setTareas(prev => prev.filter(t => t.id !== id));
+  const editarTarea = (id: string, tareaEditada: Tarea) => {
+    setTareas(prev =>
+      prev.map(t =>
+        t.id == id ? { ...t, ...tareaEditada} : t
+      )
+    )
+  }
+
+  const eliminarTarea = (id: string) => {
+    setTareas((prev) => prev.filter((tarea) => tarea.id !== id));
+  };
+
 
   return (
-    <TareasContext.Provider value={{ tareas, agregarTarea, eliminarTarea, cambioEstado }}>
+    <TareasContext.Provider value={{ tareas, agregarTarea, eliminarTarea, cambioEstado, editarTarea }}>
       {children}
     </TareasContext.Provider>
   );
