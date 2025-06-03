@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTareas } from "../components/TareasContext";
+import FraseMotivacional from "../components/fraseMotivacional"; 
 
 export default function HomeScreen() {
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
@@ -37,7 +38,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.container}>
           <Text style={styles.title}>Mis Tareas</Text>
-
+        
         <Link href="/nueva-tarea" asChild>
           <Pressable style={styles.botonNuevaTarea} accessibilityLabel="Crear nueva tarea">
             <Text style={styles.botonTexto}>+ Nueva tarea</Text>
@@ -67,11 +68,13 @@ export default function HomeScreen() {
           <Picker.Item label="Media" value="media" />
           <Picker.Item label="Baja" value="baja" />
         </Picker>
-
+        <FraseMotivacional />
         {tareas.length === 0 ? (
           <Text style={styles.noTasks}>No hay tareas aún.</Text>
         ) : (
+            
           <FlatList
+            
             data={tareasFiltradas}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
