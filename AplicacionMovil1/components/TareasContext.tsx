@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Tarea } from "../types/Tarea";
+
+const TAREAS_STORAGE_KEY = "tareas_app";
 
 type TareasContextType = {
     tareas: Tarea[];
@@ -10,29 +12,39 @@ type TareasContextType = {
     editarTarea: (id: string, t: Tarea, carpetaId?: string) => void;
 };
 
-const TareasContext = createContext<TareasContextType | null>(null);
-export const TareasProvider = ({ children }: any) => {
+export const TareasContext = createContext<TareasContextType | null>(null);
+export function TareasProvider({ children }: any) {
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const [ultimoId, setUltimoId] = useState<number>(0);
+  const [cargado, setCargado] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem("tareas").then(data => {
-      if (data) {
-        const tareasCargadas: Tarea[] = JSON.parse(data);
-        setTareas(tareasCargadas);
-        // Buscar el id más alto para continuar autoincrementando
-        const maxId = tareasCargadas.reduce((max, t) => {
-          const n = Number(t.id);
-          return !isNaN(n) && n > max ? n : max;
-        }, 0);
-        setUltimoId(maxId);
-      }
-    });
+    AsyncStorage.getItem(TAREAS_STORAGE_KEY)
+      .then(data => {
+        if (data) {
+          const tareasCargadas: Tarea[] = JSON.parse(data);
+          setTareas(tareasCargadas);
+          // Buscar el id más alto para continuar autoincrementando
+          const maxId = tareasCargadas.reduce((max, t) => {
+            const n = Number(t.id);
+            return !isNaN(n) && n > max ? n : max;
+          }, 0);
+          setUltimoId(maxId);
+        }
+      })
+      .catch(err => {
+        console.log("Error cargando tareas:", err);
+      })
+      .finally(() => setCargado(true));
   }, []);
 
   useEffect(() => {
-    AsyncStorage.setItem("tareas", JSON.stringify(tareas));
-  }, [tareas]);
+    if (cargado) {
+      AsyncStorage.setItem(TAREAS_STORAGE_KEY, JSON.stringify(tareas)).catch(err => {
+        console.log("Error guardando tareas:", err);
+      });
+    }
+  }, [tareas, cargado]);
 
   const agregarTarea = (nuevaTarea: Tarea) => {
     const nuevoId = ultimoId + 1;
@@ -80,10 +92,10 @@ export const TareasProvider = ({ children }: any) => {
       {children}
     </TareasContext.Provider>
   );
-};
+}
 
-export const useTareas = () => {
+export function useTareas() {
   const context = useContext(TareasContext);
   if (!context) throw new Error("useTareas debe usarse dentro de TareasProvider");
   return context;
-};
+}

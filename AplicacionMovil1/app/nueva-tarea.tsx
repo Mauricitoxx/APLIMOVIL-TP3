@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Tarea } from "..//types/Tarea";
+import { Tarea } from "../types/Tarea";
 import { useTareas } from "../components/TareasContext";
 
 export default function NuevaTarea() {
@@ -37,8 +37,9 @@ export default function NuevaTarea() {
           prioridad,
           estado: "pendiente",
           carpetaId: carpetaId ? String(carpetaId) : "",
+          
         };
-
+        console.log("Nueva tarea creada:", nuevaTarea); // Para depuración
         agregarTarea(nuevaTarea);
         router.replace("/");
     };

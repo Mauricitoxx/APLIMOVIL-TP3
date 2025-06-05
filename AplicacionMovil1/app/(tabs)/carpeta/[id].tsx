@@ -3,9 +3,9 @@ import { View, Text, FlatList, Pressable, Button, StyleSheet, Alert, Switch, Tou
 import { Feather } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { CarpetaContext } from "../../components/CarpetaContext";
-import { useTareas } from "../../components/TareasContext";
-import { Tarea } from "../../types/Tarea";
+import { CarpetaContext } from "../../../components/CarpetaContext";
+import { useTareas } from "../../../components/TareasContext";
+import { Tarea } from "../../../types/Tarea";
 
 export default function CarpetaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
