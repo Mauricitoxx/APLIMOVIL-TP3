@@ -47,10 +47,20 @@ export function TareasProvider({ children }: any) {
   }, [tareas, cargado]);
 
   const agregarTarea = (nuevaTarea: Tarea) => {
+    // No permitir tareas con el mismo título y descripción en la misma carpeta
+    const yaExiste = tareas.some(
+      t =>
+        t.titulo.trim().toLowerCase() === nuevaTarea.titulo.trim().toLowerCase() &&
+        t.descripcion.trim().toLowerCase() === nuevaTarea.descripcion.trim().toLowerCase() &&
+        t.carpetaId === nuevaTarea.carpetaId
+    );
+    if (yaExiste) {
+      // Puedes lanzar un error o manejarlo como prefieras
+      throw new Error("Ya existe una tarea con ese título y descripción en esta carpeta.");
+    }
     const nuevoId = ultimoId + 1;
     const tareaConId = { ...nuevaTarea, id: String(nuevoId) };
     setUltimoId(nuevoId);
-    console.log("Agregando tarea:", tareaConId);
     setTareas((prev) => [...prev, tareaConId]);
   };
 

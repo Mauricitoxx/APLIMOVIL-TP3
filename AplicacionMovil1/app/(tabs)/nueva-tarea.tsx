@@ -29,24 +29,20 @@ export default function NuevaTarea() {
 
         setError("");
 
-        // El id será asignado automáticamente en el contexto, pero para TypeScript, puedes poner un valor temporal
         const nuevaTarea: Tarea = {
-            id: "", // El contexto lo sobrescribirá con el autoincremental
+            id: "",
             titulo,
             descripcion,
             prioridad,
             estado: "pendiente",
-            carpetaId: carpetaId ? String(carpetaId) : "", // Asegúrate de que carpetaId sea un string
+            carpetaId: carpetaId ? String(carpetaId) : "",
         };
-        console.log("Nueva tarea creada:", nuevaTarea); // Para depuración
-        agregarTarea(nuevaTarea);
-
-        // *** CAMBIO CLAVE AQUÍ ***
-        // En lugar de router.replace("/"), usamos router.back()
-        // Esto cierra la pantalla actual y te lleva a la pantalla anterior en la pila.
-        // Dado que agregarTarea ya actualizó el contexto, la pantalla anterior (CarpetaDetalle)
-        // se re-renderizará con la nueva tarea visible.
-        router.back();
+        try {
+            agregarTarea(nuevaTarea);
+            router.back();
+        } catch (e: any) {
+            setError(e.message || "Error al agregar tarea.");
+        }
     };
 
     return(

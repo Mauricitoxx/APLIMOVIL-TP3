@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { View, Text, FlatList, Pressable, Button, StyleSheet, Switch, TouchableOpacity, Modal, Animated } from "react-native";
+import React, { useContext, useState, useRef } from "react";
+import { View, Text, FlatList, Pressable, Button, StyleSheet, Switch, TouchableOpacity, Modal } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -21,6 +21,9 @@ export default function CarpetaDetalle() {
   const [showTryAgain, setShowTryAgain] = useState(false);
   const [confettiKey, setConfettiKey] = useState(0);
   const [sadConfettiKey, setSadConfettiKey] = useState(0);
+  const [confettiKeys, setConfettiKeys] = useState<number[]>([]);
+  const [showSadEffect, setShowSadEffect] = useState(false);
+  const confettiTimeouts = useRef<NodeJS.Timeout[]>([]);
 
   const [filtroEstado, setFiltroEstado] = useState<"todos" | "pendiente" | "completada">("todos");
   const [filtroPrioridad, setFiltroPrioridad] = useState<"" | "alta" | "media" | "baja">("");
@@ -94,11 +97,23 @@ export default function CarpetaDetalle() {
     const tarea = tareas.find(t => t.id === id);
     if (tarea) {
       if (tarea.estado === "pendiente") {
-        setConfettiKey(k => k + 1);
+        // Lanzar confetti feliz
+        setConfettiKeys([Date.now()]);
+        confettiTimeouts.current.forEach(clearTimeout);
+        confettiTimeouts.current = [];
+        confettiTimeouts.current.push(
+          setTimeout(() => setConfettiKeys(keys => [...keys, Date.now() + 1]), 500)
+        );
+        confettiTimeouts.current.push(
+          setTimeout(() => setConfettiKeys(keys => [...keys, Date.now() + 2]), 1000)
+        );
         setShowCongrats(true);
         setTimeout(() => setShowCongrats(false), 2000);
+        setShowSadEffect(false);
       } else {
-        setSadConfettiKey(k => k + 1);
+        // Mostrar solo un modal triste, sin confetti
+        setShowSadEffect(true);
+        setTimeout(() => setShowSadEffect(false), 1800);
         setShowTryAgain(true);
         setTimeout(() => setShowTryAgain(false), 2000);
       }
@@ -261,30 +276,52 @@ export default function CarpetaDetalle() {
       </Modal>
 
       {/* Confetti effect when completing a task */}
-      <ConfettiCannon
-        key={confettiKey}
-        count={80}
-        origin={{ x: 180, y: 0 }}
-        fallSpeed={2500}
-        explosionSpeed={350}
-        fadeOut={true}
-        autoStart={true}
-        colors={["#2ecc71", "#f9a825", "#d32f2f", "#4cd137"]}
-        emojis={["🎉", "✨", "🔥", "🥳", "🎊"]}
-      />
+      {confettiKeys.map((key, idx) => (
+        <ConfettiCannon
+          key={key}
+          count={80}
+          origin={
+            idx === 0
+              ? { x: 60, y: -30 }
+              : idx === 1
+              ? { x: 180, y: -30 }
+              : { x: 300, y: -30 }
+          }
+          fallSpeed={2500}
+          explosionSpeed={350}
+          fadeOut={true}
+          autoStart={true}
+          colors={["#2ecc71", "#f9a825", "#d32f2f", "#4cd137"]}
+          emojis={["🎉", "✨", "🔥", "🥳", "🎊"]}
+        />
+      ))}
 
-      {/* Sad confetti effect when uncompleting a task */}
-      <ConfettiCannon
-        key={sadConfettiKey}
-        count={50}
-        origin={{ x: 180, y: 0 }}
-        fallSpeed={2500}
-        explosionSpeed={350}
-        fadeOut={true}
-        autoStart={true}
-        colors={["#bdbdbd", "#90a4ae", "#607d8b", "#78909c"]}
-        emojis={["💧", "😢", "💔", "🥲", "😭"]}
-      />
+      {/* Sad effect when uncompleting a task */}
+      <Modal
+        visible={showSadEffect}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSadEffect(false)}
+      >
+        <View style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.3)",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <View style={{
+            backgroundColor: "#fff",
+            borderRadius: 20,
+            padding: 32,
+            alignItems: "center",
+            elevation: 8,
+          }}>
+            <Text style={{ fontSize: 60, marginBottom: 10 }}>😢</Text>
+            <Text style={{ fontSize: 24, fontWeight: "bold", color: "#607d8b", marginBottom: 8 }}>¡Qué pena!</Text>
+            <Text style={{ fontSize: 18, color: "#333" }}>La tarea volvió a pendiente.</Text>
+          </View>
+        </View>
+      </Modal>
 
       {/* Modal de felicitación */}
       <Modal
