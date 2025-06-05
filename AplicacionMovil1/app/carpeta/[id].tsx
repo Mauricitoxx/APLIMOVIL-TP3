@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { View, Text, FlatList, Pressable, Button, StyleSheet, Alert, Switch, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, Pressable, Button, StyleSheet, Switch, TouchableOpacity, Modal } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -12,6 +12,10 @@ export default function CarpetaDetalle() {
   const context = useContext(CarpetaContext);
   const { tareas, eliminarTarea, cambioEstado, editarTarea } = useTareas();
   const router = useRouter();
+
+  // Estados para el modal de confirmación
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [tareaIdToDelete, setTareaIdToDelete] = useState<string | null>(null);
 
   const [filtroEstado, setFiltroEstado] = useState<"todos" | "pendiente" | "completada">("todos");
   const [filtroPrioridad, setFiltroPrioridad] = useState<"" | "alta" | "media" | "baja">("");
@@ -34,6 +38,8 @@ export default function CarpetaDetalle() {
   let tareasCarpeta = tareas.filter(t => t.carpetaId === id);
 
   // Eliminar tareas que no tengan carpetaId (limpieza)
+  // Esta lógica podría ser mejor manejada en un useEffect o en el contexto de tareas
+  // para evitar ejecuciones repetidas en cada renderizado.
   if (tareas.some(t => !t.carpetaId)) {
     tareas
       .filter(t => !t.carpetaId)
@@ -56,14 +62,30 @@ export default function CarpetaDetalle() {
     return prioridadOrden[b.prioridad] - prioridadOrden[a.prioridad];
   });
 
-  const confirmarEliminacion = (tareaId: string, carpetaId?: string) => {
-    const carpetaIdFinal = carpetaId || id;
-    console.log("Eliminar tarea con id:", tareaId, "de la carpeta:", carpetaIdFinal);
-    eliminarTarea(tareaId); // Solo pasa el id, ya que eliminarTarea espera un argumento
+  // *** FUNCIÓN MODIFICADA PARA PEDIR CONFIRMACIÓN ***
+  const confirmarEliminacion = (tareaId: string) => {
+    // Establece el ID de la tarea a eliminar y muestra el modal
+    setTareaIdToDelete(tareaId);
+    setShowConfirmModal(true);
   };
 
-  // Nueva función para editar tarea desde aquí
-  
+  // Función que se llama si el usuario confirma la eliminación en el modal
+  const handleConfirmDelete = () => {
+    if (tareaIdToDelete) {
+      eliminarTarea(tareaIdToDelete); // Ahora sí, elimina la tarea
+    }
+    setShowConfirmModal(false); // Oculta el modal
+    setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
+  };
+
+  // Función que se llama si el usuario cancela la eliminación en el modal
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false); // Oculta el modal
+    setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
+  };
+
+  // Nueva función para editar tarea desde aquí (parece que es solo un comentario)
+  // ...
 
   return (
     <View style={styles.container}>
@@ -154,10 +176,7 @@ export default function CarpetaDetalle() {
             <Pressable
               style={styles.editIcon}
               onPress={async () => {
-                // Navega a editar-tarea y espera los nuevos datos al volver
                 const result = await router.push({ pathname: "/editar-tarea/[id]", params: { id: item.id } });
-                // Si tienes lógica para recibir datos editados, puedes actualizar aquí
-                // Si no, el contexto debe actualizar automáticamente al volver
               }}
               accessibilityLabel="Editar tarea"
             >
@@ -181,7 +200,8 @@ export default function CarpetaDetalle() {
             </View>
             <Pressable
               style={styles.eliminarBtn}
-              onPress={() => confirmarEliminacion(item.id, item.carpetaId)}
+              // *** LLAMADA A LA FUNCIÓN DE CONFIRMACIÓN ***
+              onPress={() => confirmarEliminacion(item.id)} 
               accessibilityLabel="Eliminar tarea"
             >
               <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
@@ -190,6 +210,36 @@ export default function CarpetaDetalle() {
         )}
         ListEmptyComponent={<Text style={styles.noTasks}>No hay tareas en esta carpeta.</Text>}
       />
+
+      {/* *** MODAL DE CONFIRMACIÓN INTEGRADO *** */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showConfirmModal}
+        onRequestClose={handleCancelDelete} // Para manejar el botón de retroceso en Android
+      >
+        <View style={modalStyles.centeredView}>
+          <View style={modalStyles.modalView}>
+            <Text style={modalStyles.modalText}>
+              ¿Estás seguro de que quieres eliminar esta tarea? Esta acción no se puede deshacer.
+            </Text>
+            <View style={modalStyles.buttonContainer}>
+              <TouchableOpacity
+                style={[modalStyles.button, modalStyles.buttonCancel]}
+                onPress={handleCancelDelete}
+              >
+                <Text style={modalStyles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[modalStyles.button, modalStyles.buttonConfirm]}
+                onPress={handleConfirmDelete}
+              >
+                <Text style={modalStyles.textStyle}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -227,7 +277,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardCompletada: {
-    backgroundColor: "#d4f8e8",
+    backgroundColor: "#a3f7b5", // Verde más fuerte
     borderColor: "#2ecc71",
   },
   editIcon: {
@@ -292,5 +342,59 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     color: "#888",
     textAlign: "center",
+  },
+});
+
+// Estilos para el modal de confirmación (pueden ser parte de styles o separados)
+const modalStyles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  button: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    flex: 1, // Para que los botones ocupen espacio equitativamente
+    marginHorizontal: 5,
+  },
+  buttonConfirm: {
+    backgroundColor: '#FF6347', // Color rojo para confirmar eliminación
+  },
+  buttonCancel: {
+    backgroundColor: '#A9A9A9', // Color gris para cancelar
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
