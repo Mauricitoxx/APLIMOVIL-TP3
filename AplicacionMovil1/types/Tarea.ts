@@ -7,4 +7,5 @@ export interface Tarea {
   descripcion: string;
   prioridad: Prioridad;
   estado: Estado;
+  carpetaId: string;
 }
