@@ -1,7 +1,243 @@
-// app/index.tsx
-import { Redirect } from 'expo-router';
+import { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, Platform, Image, TouchableOpacity, Text, Animated, Easing } from 'react-native';
+import { Video, ResizeMode } from 'expo-av';
+import { useRouter } from 'expo-router';
+import Intro from '../../assets/video/intro.mp4';
+import FraseMotivacional from '@/components/fraseMotivacional';
+import logo from '../../assets/images/logo.png'; // Asegúrate de que la ruta sea correcta
+import type { AVPlaybackStatus } from 'expo-av';
 
-export default function AppRoot() {
-  
-  return <Redirect href="/home" />;
+export default function App() {
+  const video = useRef<Video>(null);
+  const [status, setStatus] = useState({});
+  const [isBuffering, setIsBuffering] = useState(false);
+  const router = useRouter();
+  const floatAnim = useRef(new Animated.Value(0)).current;
+  const fraseOpacity = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  // Intenta reproducir el video cuando esté listo para mostrar
+  const handleReadyForDisplay = async () => {
+    console.log('handleReadyForDisplay called');
+    if (video.current && video.current.playAsync) {
+      try {
+        await video.current.playAsync();
+        console.log('Video playAsync called from handleReadyForDisplay');
+      } catch (e) {
+        console.log('Error en playAsync (handleReadyForDisplay):', e);
+      }
+    } else {
+      console.log('video.current o playAsync no disponible en handleReadyForDisplay');
+    }
+  };
+
+  // Asegura que el video siempre se mantenga reproduciéndose en el fondo
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (video.current && video.current.getStatusAsync && video.current.playAsync) {
+        video.current.getStatusAsync().then((status: AVPlaybackStatus) => {
+          console.log('Interval status:', status);
+          if (status.isLoaded && !status.isPlaying && !status.isBuffering) {
+            video.current?.playAsync();
+            console.log('Video playAsync called from interval');
+          }
+        });
+      } else {
+        console.log('video.current o métodos no disponibles en interval');
+      }
+    }, 1000); // Verifica cada segundo
+    return () => clearInterval(interval);
+  }, []);
+
+  // Maneja el estado del video y reinicia si se detiene inesperadamente
+  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    setStatus(status);
+    setIsBuffering(status.isLoaded ? status.isBuffering : false);
+    console.log('handlePlaybackStatusUpdate', status);
+    // Si el video se detiene inesperadamente, intenta reproducirlo de nuevo
+    if (status.isLoaded && !status.isPlaying && !status.isBuffering) {
+      if (video.current && video.current.playAsync) {
+        video.current.playAsync();
+        console.log('Video playAsync called from handlePlaybackStatusUpdate');
+      } else {
+        console.log('video.current o playAsync no disponible en handlePlaybackStatusUpdate');
+      }
+    }
+  };
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -20,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.timing(fraseOpacity, {
+      toValue: 1,
+      duration: 1800,
+      useNativeDriver: true,
+    }).start();
+
+    // Dos saltitos rápidos seguidos para el botón
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: -18,
+          duration: 180,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 180,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: -12,
+          duration: 120,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 120,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.delay(1200),
+      ])
+    ).start();
+  }, [floatAnim, fraseOpacity, bounceAnim]);
+
+  return (
+    <View style={styles.container}>
+      <Video
+        ref={video}
+        style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative}
+        source={Intro}
+        useNativeControls={false}
+        resizeMode={ResizeMode.COVER}
+        isLooping
+        shouldPlay={true}
+        onReadyForDisplay={handleReadyForDisplay}
+        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+      />
+      {isBuffering && (
+        <View style={styles.bufferingOverlay}>
+          <Text style={styles.bufferingText}>Cargando video...</Text>
+        </View>
+      )}
+      {/* FraseMotivacional al frente y centrado */}
+      <Animated.View style={[styles.fraseWrapper, { opacity: fraseOpacity }]} pointerEvents="none">
+        {/* No se pasa style porque FraseMotivacional no acepta prop style */}
+        <FraseMotivacional />
+      </Animated.View>
+      <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
+        <Image source={logo} style={{ width: 100, height: 100, marginBottom: 100 }} />
+      </Animated.View>
+      <View style={styles.navigateButton}>
+        <Animated.View style={{ transform: [{ translateY: bounceAnim }] }}>
+          <TouchableOpacity
+            style={[styles.transparentButton, { marginTop: 20 }]}
+            activeOpacity={0.7}
+            onPress={() => router.push('/home')}
+          >
+            <Text style={styles.buttonText}>Ir a carpetas</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    alignItems: 'center',
+  },
+  videoNative: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  videoWeb: {
+    width: '100%',
+    height: '100%',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    zIndex: 0,
+  },
+  fraseWrapper: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2,
+    pointerEvents: 'none', // Permite que los botones sigan siendo clickeables
+  },
+  fraseText: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 6,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'rgba(255, 0, 0, 0.8)',
+    zIndex: 3,
+  },
+  navigateButton: {
+    marginTop: 200,
+    top: 100,
+    zIndex: 3,
+    alignItems: 'center',
+  },
+  transparentButton: {
+    backgroundColor: 'rgb(255, 255, 255)', // completamente transparente
+    borderWidth: 2,
+    borderColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+  },
+  buttonText: {
+    color: 'rgb(0, 0, 0)',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    letterSpacing: 1,
+  },
+  bufferingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  bufferingText: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    padding: 16,
+    borderRadius: 10,
+  },
+});
+
