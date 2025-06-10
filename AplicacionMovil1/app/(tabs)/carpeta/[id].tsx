@@ -217,7 +217,7 @@ export default function CarpetaDetalle() {
               <Ionicons name="create-outline" size={25} color="black" />
             </Pressable>
             <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
             <Text style={[styles.prioridad, styles[`prioridad_${item.prioridad}`]]}>
               Prioridad: {item.prioridad}
             </Text>
