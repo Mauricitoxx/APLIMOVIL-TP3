@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef } from "react";
 import { View, Text, FlatList, Pressable, Button, StyleSheet, Switch, TouchableOpacity, Modal } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CarpetaContext } from "../../../components/CarpetaContext";
@@ -214,7 +214,7 @@ export default function CarpetaDetalle() {
               }}
               accessibilityLabel="Editar tarea"
             >
-              <Feather name="edit" size={22} color="#007BFF" />
+              <Ionicons name="create-outline" size={25} color="black" />
             </Pressable>
             <Text style={styles.titulo}>{item.titulo}</Text>
             <Text style={styles.descripcion}>{item.descripcion}</Text>

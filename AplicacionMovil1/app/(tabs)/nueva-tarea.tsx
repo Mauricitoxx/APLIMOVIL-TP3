@@ -18,33 +18,37 @@ export default function NuevaTarea() {
 
     const crearTarea = () => {
         if (!titulo.trim()) {
-          Alert.alert("Validación", "El título es obligatorio.");
-          return;
+            setError("El título no puede estar vacío.");
+            return;
         }
 
         if (!["alta", "media", "baja"].includes(prioridad)) {
-          Alert.alert("Error", "Debe seleccionar una prioridad válida");
-          return;
+            setError("Debes seleccionar una prioridad válida.");
+            return;
         }
 
         setError("");
 
         const nuevaTarea: Tarea = {
-        id: uuid.v4(),
-        titulo,
-        descripcion,
-        prioridad,
-        estado: "pendiente",
+            id: "",
+            titulo,
+            descripcion,
+            prioridad,
+            estado: "pendiente",
+            carpetaId: carpetaId ? String(carpetaId) : "",
         };
-
-        agregarTarea(nuevaTarea);
-        router.back();
+        try {
+            agregarTarea(nuevaTarea);
+            router.back();
+        } catch (e: any) {
+            setError(e.message || "Error al agregar tarea.");
+        }
     };
 
     return(
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.container}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Crear una nueva Tarea</Text>
+            <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: "center"}}>Crear una nueva Tarea</Text>
             <TextInput
                 placeholder="Título"
                 value={titulo}
