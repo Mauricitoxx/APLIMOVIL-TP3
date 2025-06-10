@@ -1,15 +1,15 @@
 import { Picker } from "@react-native-picker/picker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import uuid from 'react-native-uuid';
 import { Tarea } from "../../types/Tarea";
 import { useTareas } from "../../components/TareasContext";
 
 export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
     const router = useRouter();
+    const { carpetaId } = useLocalSearchParams<{ carpetaId?: string }>();
 
     const [titulo, setTitulo] = useState("");
     const [descripcion, setDescripcion] = useState("")
@@ -18,33 +18,33 @@ export default function NuevaTarea() {
 
     const crearTarea = () => {
         if (!titulo.trim()) {
-          setError("El título no puede estar vacío.");
+          Alert.alert("Validación", "El título es obligatorio.");
           return;
         }
 
         if (!["alta", "media", "baja"].includes(prioridad)) {
-          setError("Debes seleccionar una prioridad válida.");
+          Alert.alert("Error", "Debe seleccionar una prioridad válida");
           return;
         }
 
         setError("");
 
         const nuevaTarea: Tarea = {
-          id: uuid.v4(),
-          titulo,
-          descripcion,
-          prioridad,
-          estado: "pendiente",
+        id: uuid.v4(),
+        titulo,
+        descripcion,
+        prioridad,
+        estado: "pendiente",
         };
 
         agregarTarea(nuevaTarea);
-        router.replace("/");
+        router.back();
     };
 
     return(
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.container}>
-            <Text style={{ fontSize: 30, fontWeight: 'bold', alignSelf: "center", margin: 20}}>Crear una nueva Tarea</Text>
+            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Crear una nueva Tarea</Text>
             <TextInput
                 placeholder="Título"
                 value={titulo}
@@ -81,21 +81,21 @@ export default function NuevaTarea() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    gap: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 6,
-  },
-  picker: {
-    marginTop: -20,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 9,
-  },
+    container: {
+        padding: 20,
+        gap: 12,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        padding: 10,
+        borderRadius: 6,
+    },
+    picker: {
+        marginTop: -20,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 6,
+        padding: 9,
+    },
 });
