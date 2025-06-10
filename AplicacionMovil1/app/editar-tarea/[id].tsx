@@ -2,7 +2,7 @@ import { Tarea } from "@/types/Tarea";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useTareas } from "../../components/TareasContext";
 
 export default function EditarTarea() {
@@ -87,7 +87,7 @@ const handleEditar = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", alignSelf: "center" }}>Editar Tarea</Text>
+      <Text style={{ fontSize: 30, fontWeight: "bold", alignSelf: "center", margin: 20 }}>Editar Tarea</Text>
       <TextInput
         placeholder="Título"
         value={titulo}
@@ -119,7 +119,9 @@ const handleEditar = () => {
         <Text style={{ color: "red", fontWeight: "bold", alignSelf: "center"}}>{error}</Text>
       ) : null}
 
-      <Button title="Guardar Cambios" onPress={handleEditar} />
+      <Pressable style={styles.button} onPress={handleEditar} accessibilityLabel="Guardar Cambios">
+        <Text style={styles.textcolor}>Guardar Cambios</Text>
+      </Pressable>
     </View>
   );
 }
@@ -142,4 +144,18 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 9,
   },
+  button:{
+    backgroundColor: "blue",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    alignSelf: "center",
+    marginBottom: 20,
+    marginTop:10,
+  },
+  textcolor: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  }
 });

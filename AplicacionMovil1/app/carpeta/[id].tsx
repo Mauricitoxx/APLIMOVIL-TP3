@@ -1,12 +1,11 @@
-import React, { useContext, useState, useRef } from "react";
-import { View, Text, FlatList, Pressable, Button, StyleSheet, Switch, TouchableOpacity, Modal } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useContext, useRef, useState } from "react";
+import { Button, FlatList, Modal, Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import ConfettiCannon from "react-native-confetti-cannon";
 import { CarpetaContext } from "../../components/CarpetaContext";
 import { useTareas } from "../../components/TareasContext";
-import { Tarea } from "../../types/Tarea";
-import ConfettiCannon from "react-native-confetti-cannon";
 
 export default function CarpetaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -214,10 +213,10 @@ export default function CarpetaDetalle() {
               }}
               accessibilityLabel="Editar tarea"
             >
-              <Feather name="edit" size={22} color="#007BFF" />
+              <Ionicons name="create-outline" size={25} color="black" />
             </Pressable>
             <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
             <Text style={[styles.prioridad, styles[`prioridad_${item.prioridad}`]]}>
               Prioridad: {item.prioridad}
             </Text>
