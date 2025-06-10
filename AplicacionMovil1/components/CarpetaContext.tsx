@@ -1,10 +1,14 @@
-import React, { createContext, useState, ReactNode, useEffect, useRef } from 'react';
-import { Carpeta } from '../types/Carpeta'; 
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { Tarea } from '@/types/Tarea';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useEffect, useRef, useState } from 'react';
+import { Carpeta } from '../types/Carpeta';
 
 interface CarpetaContextType {
   carpetas: Carpeta[];
+  tareas: Tarea[];
   agregarCarpeta: (nombre: string) => void;
+  editarCarpeta: (id: string, nombre: string) => void;
+  eliminarCarpeta: (id: string) => void;
 }
 
 
@@ -21,10 +25,12 @@ interface CarpetaProviderProps {
 
 export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) => {
   const [carpetas, setCarpetas] = useState<Carpeta[]>([]);
+  const [tareas, setTareas] = useState<Tarea[]>([]);
 
   const nextIdRef = useRef<number>(1);
   const [isLoaded, setIsLoaded] = useState(false); 
 
+  const colores_carpeta = ['#FF4B4B', '#4BC6FF', '#4BFF87', '#FFD34B', '#B84BFF'];
 
   useEffect(() => {
     const loadCarpetas = async () => {
@@ -69,6 +75,7 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
     const nuevaCarpeta: Carpeta = {
       id: nextIdRef.current.toString(), 
       nombre: nombre,
+      color: colores_carpeta[Math.floor(Math.random() * colores_carpeta.length)]
     };
     nextIdRef.current += 1; 
 
@@ -76,12 +83,33 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
     console.log(`Carpeta "${nombre}" agregada con ID: ${nuevaCarpeta.id}. Próximo ID: ${nextIdRef.current}`); 
   };
 
+  const editarCarpeta = (id: string, nuevo_nombre: string) => {
+    console.log("Editando carpeta:", id, nuevo_nombre);
+    setCarpetas(prev =>
+      prev.map(c =>
+        c.id === id
+          ? { ...c, nombre: nuevo_nombre }
+          : c
+      )
+    );
+  };
+
+
+  const eliminarCarpeta = (id: string) => {
+    console.log("Eliminando carpeta:", id);
+    setCarpetas((prev) => {
+      const nuevas = prev.filter((carpeta) => carpeta.id !== id);
+      console.log("Carpetas sin eliminar:", nuevas);
+      return nuevas
+    });
+  };
+
   if (!isLoaded) {
     return null; 
   }
 
   return (
-    <CarpetaContext.Provider value={{ carpetas, agregarCarpeta }}>
+    <CarpetaContext.Provider value={{ carpetas, tareas, agregarCarpeta, editarCarpeta, eliminarCarpeta }}>
       {children}
     </CarpetaContext.Provider>
   );
