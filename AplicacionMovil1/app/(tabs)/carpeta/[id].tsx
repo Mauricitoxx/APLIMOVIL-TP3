@@ -1,12 +1,11 @@
-import React, { useContext, useState, useRef } from "react";
-import { View, Text, FlatList, Pressable, Button, StyleSheet, Switch, TouchableOpacity, Modal } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useContext, useRef, useState } from "react";
+import { Button, FlatList, Modal, Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import ConfettiCannon from "react-native-confetti-cannon";
 import { CarpetaContext } from "../../../components/CarpetaContext";
 import { useTareas } from "../../../components/TareasContext";
-import { Tarea } from "../../../types/Tarea";
-import ConfettiCannon from "react-native-confetti-cannon";
 
 export default function CarpetaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -216,22 +215,28 @@ export default function CarpetaDetalle() {
             >
               <Ionicons name="create-outline" size={25} color="black" />
             </Pressable>
-            <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
-            <Text style={[styles.prioridad, styles[`prioridad_${item.prioridad}`]]}>
-              Prioridad: {item.prioridad}
-            </Text>
-            <View style={styles.estadoRow}>
-              <Text style={styles.estado}>
-                Estado: {item.estado}
-              </Text>
-              <Switch
-                value={item.estado === "completada"}
-                onValueChange={() => handleCambioEstado(item.id)}
-                trackColor={{ false: "#ccc", true: "#4cd137" }}
-                thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
-              />
-            </View>
+
+            <Pressable onPress={() => router.push({ pathname: "../tarea/[id]", params: { id: item.id } })}>
+                <Text style={[styles.titulo]}>
+                  {item.titulo}
+                </Text>
+
+                <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
+                <Text style={[styles.prioridad, styles[`prioridad_${item.prioridad}`]]}>
+                  Prioridad: {item.prioridad}
+                </Text>            
+            </Pressable>
+              <View style={styles.estadoRow}>
+                <Text style={styles.estado}>
+                  Estado: {item.estado}
+                </Text>
+                <Switch
+                  value={item.estado === "completada"}
+                  onValueChange={() => handleCambioEstado(item.id)}
+                  trackColor={{ false: "#ccc", true: "#4cd137" }}
+                  thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
+                />
+              </View>
             <Pressable
               style={styles.eliminarBtn}
               // *** LLAMADA A LA FUNCIÓN DE CONFIRMACIÓN ***
