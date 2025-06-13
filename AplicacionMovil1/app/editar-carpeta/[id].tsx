@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CarpetaContext } from '../../components/CarpetaContext';
 
 export default function EditarCarpeta() {
@@ -36,16 +36,18 @@ export default function EditarCarpeta() {
 
     return (
         <View style={styles.container}>
-        <Text style={styles.centeredHeader}>Editar carpeta</Text>
+          <Text style={styles.centeredHeader}>Editar carpeta</Text>
+          
+          <TextInput
+              placeholder="Nombre de la carpeta"
+              value={nombreCarpeta}
+              onChangeText={setNombreCarpeta}
+              style={styles.input} 
+          />
         
-        <TextInput
-            placeholder="Nombre de la carpeta"
-            value={nombreCarpeta}
-            onChangeText={setNombreCarpeta}
-            style={styles.input} 
-        />
-        
-        <Button title="Guardar Cambios" onPress={handleEditarCarpeta} />
+          <Pressable style={styles.button} onPress={handleEditarCarpeta} accessibilityLabel="Guardar Cambios">
+            <Text style={styles.textcolor}>Guardar Cambios</Text>
+          </Pressable>
         </View>
     );
 };
@@ -67,4 +69,18 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 6,
   },
+  button:{
+    backgroundColor: "blue",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    alignSelf: "center",
+    marginBottom: 20,
+    marginTop:10,
+  },
+  textcolor: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  }
 });

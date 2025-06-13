@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router'; 
-import { CarpetaContext } from '../components/CarpetaContext'; 
+import { useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { CarpetaContext } from '../components/CarpetaContext';
 
 const AltaCarpeta: React.FC = () => {
   const [nombreCarpeta, setNombreCarpeta] = useState<string>('');
@@ -37,7 +37,9 @@ const AltaCarpeta: React.FC = () => {
         style={styles.input} 
       />
       
-      <Button title="Crear carpeta" onPress={handleGuardarCarpeta} />
+      <Pressable style={styles.button} onPress={handleGuardarCarpeta} accessibilityLabel="Guardar Cambios">
+        <Text style={styles.textcolor}>Guardar Cambios</Text>
+      </Pressable>
     </View>
   );
 };
@@ -59,6 +61,20 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 6,
   },
+  button:{
+    backgroundColor: "blue",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    alignSelf: "center",
+    marginBottom: 20,
+    marginTop:10,
+  },
+  textcolor: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  }
 });
 
 export default AltaCarpeta;

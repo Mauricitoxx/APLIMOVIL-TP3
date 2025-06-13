@@ -1,12 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
+import { TareaCard } from "@/components/TareaCard";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useRef, useState } from "react";
-import { Button, FlatList, Modal, Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ConfettiCannon from "react-native-confetti-cannon";
 import { CarpetaContext } from "../../components/CarpetaContext";
 import { useTareas } from "../../components/TareasContext";
-import { TareaCard } from "@/components/TareaCard";
 
 export default function CarpetaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -124,25 +123,28 @@ export default function CarpetaDetalle() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{carpeta.nombre}</Text>
-      <Button
-        title="Crear nueva tarea"
+      <Pressable
+        style={styles.botonCrear}
         onPress={() => router.push({ pathname: "/nueva-tarea", params: { carpetaId: id } })}
-      />
+      >
+        <Text style={styles.textoBotonCrear}>Crear nueva tarea</Text>
+      </Pressable>
+
 
       {/* Botones pequeños para filtros */}
-      <View style={{ flexDirection: "row", alignSelf: "flex-end", gap: 8, marginBottom: 8 }}>
+      <View style={{ flexDirection: "row", alignSelf: "flex-end", gap: 8, marginTop:15, marginBottom: 15 }}>
         <TouchableOpacity
           onPress={() => setMostrarFiltroEstado(v => !v)}
           style={{
             paddingVertical: 4,
             paddingHorizontal: 10,
             backgroundColor: "#f2f2f2",
-            borderRadius: 5,
+            borderRadius: 10,
             borderWidth: 1,
             borderColor: "#ddd",
           }}
         >
-          <Text style={{ color: "#555", fontSize: 13 }}>
+          <Text style={{ color: "#555", fontSize: 14 }}>
             {mostrarFiltroEstado ? "▲ Estado" : "▼ Estado"}
           </Text>
         </TouchableOpacity>
@@ -152,12 +154,12 @@ export default function CarpetaDetalle() {
             paddingVertical: 4,
             paddingHorizontal: 10,
             backgroundColor: "#f2f2f2",
-            borderRadius: 5,
+            borderRadius: 10,
             borderWidth: 1,
             borderColor: "#ddd",
           }}
         >
-          <Text style={{ color: "#555", fontSize: 13 }}>
+          <Text style={{ color: "#555", fontSize: 14 }}>
             {mostrarFiltroPrioridad ? "▲ Prioridad" : "▼ Prioridad"}
           </Text>
         </TouchableOpacity>
@@ -165,8 +167,8 @@ export default function CarpetaDetalle() {
 
       {/* Filtro por Estado */}
       {mostrarFiltroEstado && (
-        <View style={{ marginBottom: 8 }}>
-          <Text style={{ fontWeight: "bold", marginTop: 4 }}>Filtrar por Estado:</Text>
+        <View style={{ marginBottom: 10 }}>
+          <Text style={{ fontWeight: "bold", marginTop: 4, marginBottom:5, fontSize: 15 }}>Filtrar por Estado:</Text>
           <Picker
             selectedValue={filtroEstado}
             onValueChange={(value) => setFiltroEstado(value)}
@@ -182,7 +184,7 @@ export default function CarpetaDetalle() {
       {/* Filtro por Prioridad */}
       {mostrarFiltroPrioridad && (
         <View style={{ marginBottom: 12 }}>
-          <Text style={{ fontWeight: "bold" }}>Filtrar por Prioridad:</Text>
+          <Text style={{ fontWeight: "bold", marginTop: 4, marginBottom:5, fontSize: 15 }}>Filtrar por Prioridad:</Text>
           <Picker
             selectedValue={filtroPrioridad}
             onValueChange={(value) => setFiltroPrioridad(value)}
@@ -210,7 +212,7 @@ export default function CarpetaDetalle() {
         )}
           ListEmptyComponent={<Text style={styles.noTasks}>No hay tareas en esta carpeta.</Text>}
         />       
-        
+
       {/* *** MODAL DE CONFIRMACIÓN INTEGRADO *** */}
       <Modal
         animationType="fade"
@@ -354,14 +356,33 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 10,
     textAlign: "center",
   },
+  botonCrear: {
+    backgroundColor: "#4962f2",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+},
+textoBotonCrear: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 1,
+},
+
   picker: {
     backgroundColor: "#f0f0f0",
-    marginBottom: 10,
+    margin:5,
     padding: 5,
     borderRadius: 8,
   },

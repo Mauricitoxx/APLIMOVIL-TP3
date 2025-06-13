@@ -25,6 +25,23 @@ export default function RootLayout() {
           <ThemeProvider value={DefaultTheme}>
             <Stack screenOptions={{ headerBackTitle: 'Volver', headerBackVisible: true,}}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              
+              <Stack.Screen
+                name='index'
+                options={{
+                  title: 'Inicio',
+                  headerShown: false
+                }}
+              />
+              
+              <Stack.Screen
+                name='home/index'
+                options={{
+                  title: 'Inicio',
+                  headerShown: true
+                }}
+              />
+
               <Stack.Screen
                 name="nueva-carpeta"
                 options={{
@@ -32,6 +49,31 @@ export default function RootLayout() {
                   headerShown: true
                 }}
               />
+
+              <Stack.Screen
+                name="editar-carpeta/[id]"
+                options={{
+                  presentation: 'modal', 
+                  title: 'Editar Carpeta'
+                }}
+              />
+
+              <Stack.Screen
+                name='carpeta/[id]'
+                options={{
+                  title: 'Volver',
+                  headerShown: true
+                }}
+              />
+
+              <Stack.Screen
+                name='tarea/[id]'
+                options={{
+                  title: 'Volver',
+                  headerShown: true
+                }}
+              />
+
               <Stack.Screen
                 name="nueva-tarea"
                 options={{

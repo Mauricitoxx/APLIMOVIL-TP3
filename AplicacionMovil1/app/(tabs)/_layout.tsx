@@ -30,7 +30,7 @@ export default function RootLayout() {
               <Stack.Screen
                 name='index'
                 options={{
-                  title: 'Volver',
+                  title: 'Inicio',
                   headerShown: false
                 }}
               />
@@ -48,6 +48,14 @@ export default function RootLayout() {
                 options={{
                   title: 'Crear Nueva Carpeta',
                   headerShown: true
+                }}
+              />
+
+              <Stack.Screen
+                name="editar-carpeta/[id]"
+                options={{
+                  presentation: 'modal', 
+                  title: 'Editar Carpeta'
                 }}
               />
 
