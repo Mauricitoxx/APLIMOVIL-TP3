@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Tarea } from "../types/Tarea";
 
 interface TareaCardProps {
@@ -23,17 +23,17 @@ export const TareaCard = ({ tarea, onEditar, onEliminar, onCambioEstado }: Tarea
         tarea.estado === "completada" && styles.cardCompletada,
       ]}
     >
-      <Pressable
-        style={styles.editIcon}
+      <TouchableOpacity
         onPress={() =>
           onEditar
             ? onEditar(tarea.id)
             : router.push({ pathname: "/editar-tarea/[id]", params: { id: tarea.id } })
         }
+        style={styles.editButton}
         accessibilityLabel="Editar tarea"
       >
-         <Ionicons name="create-outline" size={25} color="black" />
-      </Pressable>
+        <Ionicons name="create-outline" size={22} color="black" />
+      </TouchableOpacity>
 
       <Pressable
         onPress={() => router.push({ pathname: "/tarea/[id]", params: { id: tarea.id } })}
@@ -82,6 +82,27 @@ export const TareaCard = ({ tarea, onEditar, onEliminar, onCambioEstado }: Tarea
 };
 
 const styles = StyleSheet.create({
+  editIconTouchable: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 6,
+    borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.05)",
+  },
+
+  editButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20, 
+    backgroundColor: "rgba(0,0,0,0.05)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   cardAlta: {
     borderColor: "#d32f2f", // rojo para prioridad alta
   },
@@ -116,18 +137,20 @@ const styles = StyleSheet.create({
     right: 10,
   },
   titulo: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 4,
   },
   descripcion: {
     fontSize: 14,
     color: "#555",
-    marginBottom: 4,
+    marginBottom: 8,
+    marginTop: 8,
   },
   prioridad: {
     fontSize: 14,
     fontWeight: "600",
+    marginBottom: -5,
   },
   prioridad_alta: { color: "#CB0404" },
   prioridad_media: { color: "#FF9F00" },

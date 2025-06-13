@@ -4,7 +4,7 @@ import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
-import { Button, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../../components/CarpetaContext';
 
@@ -44,7 +44,12 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <Text style={styles.header}>Mis Carpetas</Text>
         
-        <Button title="Crear nueva carpeta" onPress={() => router.push('/nueva-carpeta')} />
+          <Pressable
+            style={styles.botonCrear}
+            onPress={() => router.push({ pathname: "/nueva-carpeta", params: { carpetaId: id } })}
+          >
+            <Text style={styles.textoBotonCrear}>Crear nueva carpeta</Text>
+          </Pressable>
 
         <FlatList
           data={carpetas}
@@ -103,10 +108,29 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   header: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+  },
+  botonCrear: {
+    backgroundColor: "#4962f2",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginBottom:10,
+  },
+  textoBotonCrear: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 1,
   },
   modalOverlay: {
     position: 'absolute',
