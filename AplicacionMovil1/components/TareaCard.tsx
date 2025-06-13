@@ -1,63 +1,158 @@
-import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { Feather } from '@expo/vector-icons'
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Tarea } from "../types/Tarea";
 
-type Estado = 'pendiente' | 'completada';
-type Prioridad = "alta" | "media" | "baja" | "";
-
-
-type Tarea = {
-  id: string;
-  titulo: string;
-  descripcion: string;
-  prioridad: Prioridad;
-  estado: Estado;
-  carpetaId: string;
+interface TareaCardProps {
+  tarea: Tarea;
+  onEditar?: (id: string) => void;
+  onEliminar?: (id: string) => void;
+  onCambioEstado?: (id: string) => void;
 }
 
-interface Props {
-  tarea: Tarea
-}
-
-const getColorByPrioridad = (prioridad: string) => {
-  switch (prioridad) {
-    case 'alta':
-      return 'bg-red-200 text-red-800'
-    case 'media':
-      return 'bg-yellow-200 text-yellow-800'
-    case 'baja':
-      return 'bg-green-200 text-green-800'
-    default:
-      return 'bg-gray-200 text-gray-800'
-  }
-}
-
-export const TareaCard: React.FC<Props> = ({ tarea }) => {
-  const navigation = useNavigation<any>()
+export const TareaCard = ({ tarea, onEditar, onEliminar, onCambioEstado }: TareaCardProps) => {
+  const router = useRouter();
 
   return (
-    <TouchableOpacity
-      className="bg-white p-4 rounded-2xl shadow mb-3 flex-row justify-between items-center"
-      onPress={() => navigation.navigate('DetalleTareaScreen', { idTarea: tarea.id })}
+    <View style={[
+        styles.card,
+        tarea.prioridad === "alta" && styles.cardAlta,
+        tarea.prioridad === "media" && styles.cardMedia,
+        tarea.prioridad === "baja" && styles.cardBaja,
+        tarea.estado === "completada" && styles.cardCompletada,
+      ]}
     >
-      <View className="flex-1">
-        <Text className="text-lg font-semibold">{tarea.titulo}</Text>
-        <Text className="text-sm text-gray-600" numberOfLines={1}>
-          {tarea.descripcion}
-        </Text>
+      <Pressable
+        style={styles.editIcon}
+        onPress={() =>
+          onEditar
+            ? onEditar(tarea.id)
+            : router.push({ pathname: "/editar-tarea/[id]", params: { id: tarea.id } })
+        }
+        accessibilityLabel="Editar tarea"
+      >
+         <Ionicons name="create-outline" size={25} color="black" />
+      </Pressable>
 
-        <View className="flex-row gap-2 mt-2">
-          <Text className={`text-xs px-2 py-1 rounded-full ${getColorByPrioridad(tarea.prioridad)}`}>
-            {tarea.prioridad.toUpperCase()}
-          </Text>
-          <Text className={`text-xs px-2 py-1 rounded-full ${tarea.estado === 'completada' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-            {tarea.estado.toUpperCase()}
-          </Text>
-        </View>
+      <Pressable
+        onPress={() => router.push({ pathname: "/tarea/[id]", params: { id: tarea.id } })}
+      >
+        <Text style={[styles.titulo, { textDecorationLine: "underline" }]}>
+          {tarea.titulo}
+        </Text>
+      </Pressable>
+
+      <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">
+        {tarea.descripcion}
+      </Text>
+
+      <Text style={[styles.prioridad, styles[`prioridad_${tarea.prioridad}`]]}>
+        Prioridad: {tarea.prioridad}
+      </Text>
+
+      <View style={styles.estadoRow}>
+        <Text style={styles.estado}>Estado: {tarea.estado}</Text>
+        <Pressable
+          onPress={() => onCambioEstado?.(tarea.id)}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 4,
+          }}
+        >
+          <Ionicons
+            name={tarea.estado === "completada" ? "checkbox-outline" : "square-outline"}
+            size={25}
+            color={tarea.estado === "completada" ? "#2ecc71" : "#999"}
+          />
+        </Pressable>
       </View>
 
-      <Feather name="chevron-right" size={20} color="#9ca3af" />
-    </TouchableOpacity>
-  )
-}
+      <Pressable
+        style={styles.eliminarBtn}
+        onPress={() => onEliminar?.(tarea.id)}
+        accessibilityLabel="Eliminar tarea"
+      >
+        <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
+      </Pressable>
+
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  cardAlta: {
+    borderColor: "#d32f2f", // rojo para prioridad alta
+  },
+  cardMedia: {
+    borderColor: "#f9a825", // amarillo
+  },
+  cardBaja: {
+    borderColor: "#4caf50", // verde
+  },
+
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    position: "relative",
+    borderWidth: 2,
+    borderColor: "#607d8b",
+  },
+  cardCompletada: {
+    backgroundColor: "#AEEA94",
+    borderColor: "#607d8b",
+  },
+  editIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
+  titulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  descripcion: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 4,
+  },
+  prioridad: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  prioridad_alta: { color: "#CB0404" },
+  prioridad_media: { color: "#FF9F00" },
+  prioridad_baja: { color: "#309898" },
+  prioridad_: {},
+  estadoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    marginTop: 2,
+  },
+  estado: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  eliminarBtn: {
+    backgroundColor: "#e74c3c",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignItems: "center"
+  },
+  eliminarBtnTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+});

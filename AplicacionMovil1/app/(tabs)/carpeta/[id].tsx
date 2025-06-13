@@ -6,6 +6,7 @@ import { Button, FlatList, Modal, Pressable, StyleSheet, Switch, Text, Touchable
 import ConfettiCannon from "react-native-confetti-cannon";
 import { CarpetaContext } from "../../../components/CarpetaContext";
 import { useTareas } from "../../../components/TareasContext";
+import { TareaCard } from "@/components/TareaCard";
 
 export default function CarpetaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -200,55 +201,15 @@ export default function CarpetaDetalle() {
         data={tareasCarpeta}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
-          <View
-            style={[
-              styles.card,
-              item.estado === "completada" && styles.cardCompletada
-            ]}
-          >
-            <Pressable
-              style={styles.editIcon}
-              onPress={async () => {
-                const result = await router.push({ pathname: "/editar-tarea/[id]", params: { id: item.id } });
-              }}
-              accessibilityLabel="Editar tarea"
-            >
-              <Ionicons name="create-outline" size={25} color="black" />
-            </Pressable>
-
-            <Pressable onPress={() => router.push({ pathname: "../tarea/[id]", params: { id: item.id } })}>
-                <Text style={[styles.titulo]}>
-                  {item.titulo}
-                </Text>
-
-                <Text style={styles.descripcion} numberOfLines={1} ellipsizeMode="tail">{item.descripcion}</Text>
-                <Text style={[styles.prioridad, styles[`prioridad_${item.prioridad}`]]}>
-                  Prioridad: {item.prioridad}
-                </Text>            
-            </Pressable>
-              <View style={styles.estadoRow}>
-                <Text style={styles.estado}>
-                  Estado: {item.estado}
-                </Text>
-                <Switch
-                  value={item.estado === "completada"}
-                  onValueChange={() => handleCambioEstado(item.id)}
-                  trackColor={{ false: "#ccc", true: "#4cd137" }}
-                  thumbColor={item.estado === "completada" ? "#2ecc71" : "#f4f3f4"}
-                />
-              </View>
-            <Pressable
-              style={styles.eliminarBtn}
-              // *** LLAMADA A LA FUNCIÓN DE CONFIRMACIÓN ***
-              onPress={() => confirmarEliminacion(item.id)} 
-              accessibilityLabel="Eliminar tarea"
-            >
-              <Text style={styles.eliminarBtnTexto}>Eliminar</Text>
-            </Pressable>
-          </View>
+          <TareaCard
+            tarea={item}
+            onEditar={(id) => router.push({ pathname: "/editar-tarea/[id]", params: { id } })}
+            onEliminar={confirmarEliminacion}
+            onCambioEstado={handleCambioEstado}
+          />
         )}
-        ListEmptyComponent={<Text style={styles.noTasks}>No hay tareas en esta carpeta.</Text>}
-      />
+          ListEmptyComponent={<Text style={styles.noTasks}>No hay tareas en esta carpeta.</Text>}
+        />       
 
       {/* *** MODAL DE CONFIRMACIÓN INTEGRADO *** */}
       <Modal
