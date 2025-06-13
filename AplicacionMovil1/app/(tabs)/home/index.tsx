@@ -4,7 +4,7 @@ import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
-import { Button, FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../../components/CarpetaContext';
 
@@ -46,7 +46,7 @@ export default function HomeScreen() {
         
           <Pressable
             style={styles.botonCrear}
-            onPress={() => router.push({ pathname: "/nueva-carpeta", params: { carpetaId: id } })}
+            onPress={() => router.push('/nueva-carpeta')}
           >
             <Text style={styles.textoBotonCrear}>Crear nueva carpeta</Text>
           </Pressable>
