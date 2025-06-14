@@ -1,12 +1,12 @@
 import { TareasProvider } from '@/components/TareasContext';
-import { CarpetaProvider } from '../components/CarpetaContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native'; 
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router'; 
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { CarpetaProvider } from '../components/CarpetaContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -23,8 +23,25 @@ export default function RootLayout() {
       <CarpetaProvider>
         <TareasProvider>
           <ThemeProvider value={DefaultTheme}>
-            <Stack>
+            <Stack screenOptions={{ headerBackTitle: 'Volver', headerBackVisible: true,}}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              
+              <Stack.Screen
+                name='index'
+                options={{
+                  title: 'Inicio',
+                  headerShown: false
+                }}
+              />
+              
+              <Stack.Screen
+                name='home/index'
+                options={{
+                  title: 'Inicio',
+                  headerShown: true
+                }}
+              />
+
               <Stack.Screen
                 name="nueva-carpeta"
                 options={{
@@ -32,6 +49,31 @@ export default function RootLayout() {
                   headerShown: true
                 }}
               />
+
+              <Stack.Screen
+                name="editar-carpeta/[id]"
+                options={{
+                  presentation: 'modal', 
+                  title: 'Editar Carpeta'
+                }}
+              />
+
+              <Stack.Screen
+                name='carpeta/[id]'
+                options={{
+                  title: 'Volver',
+                  headerShown: true
+                }}
+              />
+
+              <Stack.Screen
+                name='tarea/[id]'
+                options={{
+                  title: 'Volver',
+                  headerShown: true
+                }}
+              />
+
               <Stack.Screen
                 name="nueva-tarea"
                 options={{

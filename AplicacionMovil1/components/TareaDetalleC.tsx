@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Tarea } from "../types/Tarea";
 
 interface TareaDetalleProps {
@@ -8,17 +8,18 @@ interface TareaDetalleProps {
   onCambiarEstado?: () => void;
 }
 
-export default function TareaDetalle({
-  tarea,
-  onEditar,
-  onEliminar,
-  onCambiarEstado,
-}: TareaDetalleProps) {
+export default function TareaDetalle({ tarea, onEditar, onEliminar, onCambiarEstado }: TareaDetalleProps) {
+  
   return (
-    <View style={styles.card}>
+    <View style={[
+      styles.card, 
+      tarea.prioridad === "alta" && styles.cardAlta,
+      tarea.prioridad === "media" && styles.cardMedia,
+      tarea.prioridad === "baja" && styles.cardBaja,
+      tarea.estado === "completada" && styles.cardCompletada,
+    ]}>
       <Text style={styles.titulo}>{tarea.titulo}</Text>
-      <Text style={styles.descripcion}>{tarea.descripcion}</Text>
-
+      
       <View style={styles.infoContainer}>
         <Text style={styles.info}>
           <Text style={styles.label}>Prioridad: </Text>
@@ -29,16 +30,14 @@ export default function TareaDetalle({
           {tarea.estado}
         </Text>
       </View>
+      
+      {!!tarea.descripcion && (
+        <View style={styles.descripcionContainer}>
+          <Text style={styles.descripcion}>{tarea.descripcion}</Text>
+        </View>
+      )}
 
       <View style={styles.buttonsContainer}>
-        {onCambiarEstado && (
-          <TouchableOpacity
-            style={[styles.button, styles.estado]}
-            onPress={onCambiarEstado}
-          >
-            <Text style={styles.buttonText}>Cambiar Estado</Text>
-          </TouchableOpacity>
-        )}
         {onEditar && (
           <TouchableOpacity
             style={[styles.button, styles.editar]}
@@ -47,6 +46,16 @@ export default function TareaDetalle({
             <Text style={styles.buttonText}>Editar</Text>
           </TouchableOpacity>
         )}
+        
+        {onCambiarEstado && (
+          <TouchableOpacity
+            style={[styles.button, styles.estado]}
+            onPress={onCambiarEstado}
+          >
+            <Text style={styles.buttonText}>Cambiar Estado</Text>
+          </TouchableOpacity>
+        )}
+        
         {onEliminar && (
           <TouchableOpacity
             style={[styles.button, styles.eliminar]}
@@ -61,6 +70,19 @@ export default function TareaDetalle({
 }
 
 const styles = StyleSheet.create({
+  cardAlta: {
+    backgroundColor: "#fc9a9a",
+  },
+  cardMedia: {
+    backgroundColor: "#FCF596",
+  },
+  cardBaja: {
+    backgroundColor: "#CCE0AC",
+  },
+  cardCompletada: {
+    backgroundColor: "#AEEA94",
+    borderColor: "#607d8b",
+  },
   card: {
     margin: 20,
     backgroundColor: "#fff",
@@ -71,25 +93,48 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
+    borderWidth: 1
   },
   titulo: {
-    fontSize: 20,
+    fontSize: 30,
+    textAlign: "center",
     fontWeight: "bold",
     marginBottom: 10,
     color: "#333",
   },
   descripcion: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#555",
-    marginBottom: 16,
+    margin: 10,
+  },
+  descripcionContainer: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#faf2e8",
+    marginBottom: 20,
+    marginTop: 10,
+    padding: 10,
   },
   infoContainer: {
+    flexDirection: "row",
+    gap: 8,
     marginBottom: 16,
+    marginTop:16,
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
   },
   info: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
     marginBottom: 4,
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderColor: "#ccc",
+    backgroundColor: "#f5f5f5",
   },
   label: {
     fontWeight: "600",

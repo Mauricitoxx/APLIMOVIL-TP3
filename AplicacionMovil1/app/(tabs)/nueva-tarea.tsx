@@ -1,10 +1,10 @@
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Tarea } from "../../types/Tarea";
 import { useTareas } from "../../components/TareasContext";
+import { Tarea } from "../../types/Tarea";
 
 export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
@@ -78,7 +78,9 @@ export default function NuevaTarea() {
               <Text style={{ color: "red", fontWeight: "bold", alignSelf: "center"}}>{error}</Text>
             ) : null}
 
-            <Button title="Crear tarea" onPress={crearTarea} />
+            <Pressable style={styles.button} onPress={crearTarea} accessibilityLabel="Guardar Cambios">
+                <Text style={styles.textcolor}>Guardar Cambios</Text>
+            </Pressable>
         </View>
       </SafeAreaView>
     )
@@ -102,4 +104,18 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         padding: 9,
     },
+    button:{
+        backgroundColor: "blue",
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 8,
+        alignSelf: "center",
+        marginBottom: 20,
+        marginTop:10,
+    },
+    textcolor: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold",
+    }   
 });
