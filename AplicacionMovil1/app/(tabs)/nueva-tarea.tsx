@@ -1,3 +1,4 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
@@ -10,6 +11,7 @@ export default function NuevaTarea() {
     const { agregarTarea } = useTareas();
     const router = useRouter();
     const { carpetaId } = useLocalSearchParams<{ carpetaId?: string }>();
+      const colores = useCustomColors();
 
     const [titulo, setTitulo] = useState("");
     const [descripcion, setDescripcion] = useState("")
@@ -46,27 +48,39 @@ export default function NuevaTarea() {
     };
 
     return(
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-        <View style={styles.container}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', alignSelf: "center"}}>Crear una nueva Tarea</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
+        <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+            <Text style={{ fontSize: 30, fontWeight: "bold", alignSelf: "center", margin: 20, color: colores.texto}}>Crear una nueva Tarea</Text>
             <TextInput
                 placeholder="Título"
+                placeholderTextColor={colores.textoSecundario || '#aaa'}
                 value={titulo}
                 onChangeText={setTitulo}
-                style={styles.input}
+                style={[styles.input, {
+                    color: colores.texto,
+                    borderColor: colores.borde || colores.texto,
+                    backgroundColor: colores.inputFondo || 'transparent',
+                }]} 
             />
             <TextInput
                 placeholder="Descripción"
+                placeholderTextColor={colores.textoSecundario || '#aaa'}
                 value={descripcion}
                 onChangeText={setDescripcion}
                 multiline
-                style={[styles.input, { height: 100 }]}
+                style={[styles.input, {
+                    color: colores.texto,
+                    borderColor: colores.borde || colores.texto,
+                    backgroundColor: colores.inputFondo || 'transparent',
+                    height: 100,
+                }]} 
             />
-            <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 10, marginBottom: 10}}>Seleccione el nivel de prioridad de la tarea:</Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 10, marginBottom: 20, color: colores.texto}}>Seleccione el nivel de prioridad de la tarea:</Text>
             <Picker
                 selectedValue={prioridad}
                 onValueChange={(value) => setPrioridad(value)}
-                style={styles.picker}
+                style={[styles.picker, { color: colores.texto, backgroundColor: colores.inputFondo }]}
+                dropdownIconColor={colores.texto}
             >
                 <Picker.Item label="Nivel de Prioridad" value="" />
                 <Picker.Item label="Alta" value="alta" />
@@ -78,7 +92,7 @@ export default function NuevaTarea() {
               <Text style={{ color: "red", fontWeight: "bold", alignSelf: "center"}}>{error}</Text>
             ) : null}
 
-            <Pressable style={styles.button} onPress={crearTarea} accessibilityLabel="Guardar Cambios">
+            <Pressable style={[styles.button, { backgroundColor: colores.primario }]} onPress={crearTarea} accessibilityLabel="Guardar Cambios">
                 <Text style={styles.textcolor}>Guardar Cambios</Text>
             </Pressable>
         </View>

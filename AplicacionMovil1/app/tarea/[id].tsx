@@ -1,3 +1,4 @@
+import { useCustomColors } from "@/hooks/useCustomColors";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -8,6 +9,7 @@ export default function TareaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
+  const colores = useCustomColors();
 
   const tarea = tareas.find((c) => c.id.toString() === id);
 
@@ -29,7 +31,6 @@ export default function TareaDetalle() {
     if (tareaIdToDelete) eliminarTarea(tareaIdToDelete);
     setShowConfirmModal(false);
     setTareaIdToDelete(null);
-    return
   };
 
   const handleCancelDelete = () => {
@@ -46,7 +47,7 @@ export default function TareaDetalle() {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <View className="flex-1 bg-gray-100" style={[{ backgroundColor: colores.fondo, flex: 1 }]} >
       <TareaDetalleC
         tarea={tarea}
         onEditar={handleEditar}

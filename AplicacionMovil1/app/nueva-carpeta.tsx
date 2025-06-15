@@ -1,8 +1,8 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CarpetaContext } from '../components/CarpetaContext';
-import { useCustomColors } from '@/hooks/useCustomColors';
 
 const AltaCarpeta: React.FC = () => {
   const [nombreCarpeta, setNombreCarpeta] = useState<string>('');

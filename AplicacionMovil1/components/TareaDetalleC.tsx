@@ -1,3 +1,4 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Tarea } from "../types/Tarea";
 
@@ -9,16 +10,25 @@ interface TareaDetalleProps {
 }
 
 export default function TareaDetalle({ tarea, onEditar, onEliminar, onCambiarEstado }: TareaDetalleProps) {
-  
+  const colores = useCustomColors();
+
+  const prioridadColor: Record<"alta" | "media" | "baja", string> = {
+    alta: "#fc9a9a",
+    media: "#FCF596",
+    baja: "#CCE0AC",
+  };
+
+  const colorPrioridad = prioridadColor[tarea.prioridad as "alta" | "media" | "baja"];
+
   return (
     <View style={[
-      styles.card, 
-      tarea.prioridad === "alta" && styles.cardAlta,
-      tarea.prioridad === "media" && styles.cardMedia,
-      tarea.prioridad === "baja" && styles.cardBaja,
-      tarea.estado === "completada" && styles.cardCompletada,
+      styles.card,
+        {
+          backgroundColor: tarea.estado === "completada" ? "#AEEA94" : colorPrioridad,
+          borderColor: colores.tarjeta,
+        },
     ]}>
-      <Text style={styles.titulo}>{tarea.titulo}</Text>
+      <Text style={[styles.titulo, { color: "#030412" }]}>{tarea.titulo}</Text>
       
       <View style={styles.infoContainer}>
         <Text style={styles.info}>
@@ -100,7 +110,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333",
   },
   descripcion: {
     fontSize: 18,

@@ -1,14 +1,17 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { Tarea } from "@/types/Tarea";
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTareas } from "../../components/TareasContext";
 
 export default function EditarTarea() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { tareas, editarTarea } = useTareas();
   const router = useRouter();
+  const colores = useCustomColors();
 
   const tarea = tareas.find(t => t.id.toString() === id);
 
@@ -86,48 +89,63 @@ const handleEditar = () => {
   if (!componenteListo) return null;
 
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 30, fontWeight: "bold", alignSelf: "center", margin: 20 }}>Editar Tarea</Text>
-      <TextInput
-        placeholder="Título"
-        value={titulo}
-        onChangeText={setTitulo}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Descripción"
-        value={descripcion}
-        onChangeText={setDescripcion}
-        multiline
-        style={[styles.input, { height: 100 }]}
-      />
-      <Text style={{ fontSize: 14, fontWeight: "bold", marginTop: 10, marginBottom: 10 }}>
-        Seleccione el nivel de prioridad de la tarea:
-      </Text>
-      <Picker
-        selectedValue={prioridad}
-        onValueChange={(value) => setPrioridad(value)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Nivel de Prioridad" value="" />
-        <Picker.Item label="Alta" value="alta" />
-        <Picker.Item label="Media" value="media" />
-        <Picker.Item label="Baja" value="baja" />
-      </Picker>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
+      <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+        <Text style={{ fontSize: 30, fontWeight: "bold", alignSelf: "center", margin: 20, color: colores.texto }}>Editar Tarea</Text>
+        <TextInput
+          placeholder="Título"
+          placeholderTextColor={colores.textoSecundario || '#aaa'}
+          value={titulo}
+          onChangeText={setTitulo}
+          style={[styles.input, {
+                color: colores.texto,
+                borderColor: colores.borde || colores.texto,
+                backgroundColor: colores.inputFondo || 'transparent',
+          }]} 
+        />
+        <TextInput
+          placeholder="Descripción"
+          placeholderTextColor={colores.textoSecundario || '#aaa'}
+          value={descripcion}
+          onChangeText={setDescripcion}
+          multiline
+          style={[styles.input, {
+                color: colores.texto,
+                borderColor: colores.borde || colores.texto,
+                backgroundColor: colores.inputFondo || 'transparent',
+                height: 100,
+          }]} 
+        />
+        <Text style={{ fontSize: 14, fontWeight: "bold", marginTop: 10, marginBottom: 20, color: colores.texto }}>
+          Seleccione el nivel de prioridad de la tarea:
+        </Text>
+        <Picker
+          selectedValue={prioridad}
+          onValueChange={(value) => setPrioridad(value)}
+          style={[styles.picker, { color: colores.texto, backgroundColor: colores.inputFondo }]}
+          dropdownIconColor={colores.texto}
+        >
+          <Picker.Item label="Nivel de Prioridad" value="" />
+          <Picker.Item label="Alta" value="alta" />
+          <Picker.Item label="Media" value="media" />
+          <Picker.Item label="Baja" value="baja" />
+        </Picker>
 
-      {error ? (
-        <Text style={{ color: "red", fontWeight: "bold", alignSelf: "center"}}>{error}</Text>
-      ) : null}
+        {error ? (
+          <Text style={{ color: "red", fontWeight: "bold", alignSelf: "center"}}>{error}</Text>
+        ) : null}
 
-      <Pressable style={styles.button} onPress={handleEditar} accessibilityLabel="Guardar Cambios">
-        <Text style={styles.textcolor}>Guardar Cambios</Text>
-      </Pressable>
-    </View>
-  );
+        <Pressable style={[styles.button, { backgroundColor: colores.primario }]} onPress={handleEditar} accessibilityLabel="Guardar Cambios">
+          <Text style={styles.textcolor}>Guardar Cambios</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     gap: 12,
   },

@@ -1,13 +1,13 @@
 import { CarpetaProvider } from '@/components/CarpetaContext';
 import { TareasProvider } from '@/components/TareasContext';
 import { ThemeProviderCustom, useCustomTheme } from '@/components/TemaContext';
-import { useCustomColors } from '@/hooks/useCustomColors';
-import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, DarkTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useCustomColors } from '@/hooks/useCustomColors';
 
 function InnerApp() {
   const { tema } = useCustomTheme();

@@ -1,4 +1,5 @@
 import { TareaCard } from "@/components/TareaCard";
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useRef, useState } from "react";
@@ -12,6 +13,7 @@ export default function CarpetaDetalle() {
   const context = useContext(CarpetaContext);
   const { tareas, eliminarTarea, cambioEstado, editarTarea } = useTareas();
   const router = useRouter();
+  const colores = useCustomColors();
 
   // Estados para el modal de confirmación
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -121,8 +123,8 @@ export default function CarpetaDetalle() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>{carpeta.nombre}</Text>
+    <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+      <Text style={[styles.header, { color: colores.texto }]}>{carpeta.nombre}</Text>
       <Pressable
         style={styles.botonCrear}
         onPress={() => router.push({ pathname: "/nueva-tarea", params: { carpetaId: id } })}
@@ -168,7 +170,7 @@ export default function CarpetaDetalle() {
       {/* Filtro por Estado */}
       {mostrarFiltroEstado && (
         <View style={{ marginBottom: 10 }}>
-          <Text style={{ fontWeight: "bold", marginTop: 4, marginBottom:5, fontSize: 15 }}>Filtrar por Estado:</Text>
+          <Text style={{ fontWeight: "bold", marginTop: 4, marginBottom:5, fontSize: 15, color: colores.texto }}>Filtrar por Estado:</Text>
           <Picker
             selectedValue={filtroEstado}
             onValueChange={(value) => setFiltroEstado(value)}
@@ -184,7 +186,7 @@ export default function CarpetaDetalle() {
       {/* Filtro por Prioridad */}
       {mostrarFiltroPrioridad && (
         <View style={{ marginBottom: 12 }}>
-          <Text style={{ fontWeight: "bold", marginTop: 4, marginBottom:5, fontSize: 15 }}>Filtrar por Prioridad:</Text>
+          <Text style={{ fontWeight: "bold", marginTop: 4, marginBottom:5, fontSize: 15, color: colores.texto }}>Filtrar por Prioridad:</Text>
           <Picker
             selectedValue={filtroPrioridad}
             onValueChange={(value) => setFiltroPrioridad(value)}

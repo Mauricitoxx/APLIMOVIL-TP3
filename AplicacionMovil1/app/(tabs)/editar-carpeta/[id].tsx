@@ -1,8 +1,8 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CarpetaContext } from '../../../components/CarpetaContext';
-import { useCustomColors } from '@/hooks/useCustomColors';
 
 export default function EditarCarpeta() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -52,7 +52,12 @@ export default function EditarCarpeta() {
             }]} 
           />
         
-          <Pressable style={[styles.button, { backgroundColor: colores.primario }]} onPress={handleEditarCarpeta} accessibilityLabel="Guardar Cambios">
+          <Pressable
+            style={[styles.button, { backgroundColor: colores.primario }]}
+            onPress={handleEditarCarpeta}
+            accessibilityLabel="Guardar Cambios"
+            accessibilityHint="Guarda los cambios realizados a la carpeta actual"
+          >
             <Text style={styles.textcolor}>Guardar Cambios</Text>
           </Pressable>
         </View>
@@ -61,6 +66,7 @@ export default function EditarCarpeta() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     gap: 12, 
   },
