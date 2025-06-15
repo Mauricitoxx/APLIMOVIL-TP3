@@ -1,3 +1,4 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -29,6 +30,41 @@ const CarpetaCard: React.FC<Props> = ({ carpeta, tareas, onEditar, onEliminar, o
   const tareasDeCarpeta = tareas.filter(t => t.carpetaId === carpeta.id);
   const total = tareasDeCarpeta.length;
   const realizadas = tareasDeCarpeta.filter(t => t.estado === 'completada').length;
+  const colores = useCustomColors();
+
+  const styles = StyleSheet.create({
+    card: {
+      borderWidth: 1,
+      borderColor: colores.borde,
+      borderRadius: 12,
+      overflow: 'hidden',
+      marginVertical: 10,
+      backgroundColor: colores.tarjeta,
+    },
+    headerColor: {
+      height: 60,
+      width: '100%',
+      backgroundColor: carpeta.color,
+    },
+    content: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 12,
+    },
+    nombre: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colores.texto,
+    },
+    buttons: {
+      flexDirection: 'row',
+      gap: 10,
+    },
+    icon: {
+      marginLeft: 10,
+    },
+  });
 
   return (
     <TouchableOpacity onPress={() => onPress(carpeta.id)} activeOpacity={0.8}>
@@ -40,10 +76,10 @@ const CarpetaCard: React.FC<Props> = ({ carpeta, tareas, onEditar, onEliminar, o
           </Text>
           <View style={styles.buttons}>
             <TouchableOpacity onPress={() => onEditar(carpeta.id)} style={styles.icon}>
-              <Ionicons name="create-outline" size={22} color="black" />
+              <Ionicons name="create-outline" size={22} color={colores.icono} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => onEliminar(carpeta.id)} style={styles.icon}>
-              <Ionicons name="trash-outline" size={22} color="black" />
+              <Ionicons name="trash-outline" size={22} color={colores.icono} />
             </TouchableOpacity>
           </View>
         </View>
@@ -51,38 +87,6 @@ const CarpetaCard: React.FC<Props> = ({ carpeta, tareas, onEditar, onEliminar, o
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    borderWidth: 1,
-    borderColor: '#000',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginVertical: 10,
-    backgroundColor: '#fff',
-  },
-  headerColor: {
-    height: 60,
-    width: '100%',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-  },
-  nombre: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttons: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  icon: {
-    marginLeft: 10,
-  },
-});
 
 export default CarpetaCard;
 
