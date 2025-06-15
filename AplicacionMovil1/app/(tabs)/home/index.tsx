@@ -3,6 +3,7 @@
 import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [carpetaIdToDelete, setCarpetaIdToDelete] = useState<string | null>(null);
+  const colores = useCustomColors();
 
   if (!context) {
     return <Text>Error: CarpetaContext no disponible.</Text>;
@@ -37,16 +39,16 @@ export default function HomeScreen() {
     setCarpetaIdToDelete(null);
   };
 
-  const { carpetas, editarCarpeta, eliminarCarpeta } = context;
+  const { carpetas, eliminarCarpeta } = context;
   const { tareas } = useTareas();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
       <View style={styles.container}>
         <View style={{ alignItems: 'center', marginTop: 20 }}>
           <TemaCambio />
         </View>
-        <Text style={styles.header}>Mis Carpetas</Text>
+        <Text style={[styles.header, { color : colores.texto }]}>Mis Carpetas</Text>
         
           <Pressable
             style={styles.botonCrear}
