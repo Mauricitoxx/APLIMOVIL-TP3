@@ -1,5 +1,6 @@
 /* Index representa la Ventana Inicial (Home) */
 
+import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
 import { useRouter } from "expo-router";
@@ -42,6 +43,9 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View style={styles.container}>
+        <View style={{ alignItems: 'center', marginTop: 20 }}>
+          <TemaCambio />
+        </View>
         <Text style={styles.header}>Mis Carpetas</Text>
         
           <Pressable
