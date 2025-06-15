@@ -1,3 +1,4 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -8,6 +9,7 @@ export default function EditarCarpeta() {
     const [nombreCarpeta, setNombreCarpeta] = useState<string>('');
     const context = useContext(CarpetaContext);
     const router = useRouter(); 
+    const colores = useCustomColors();
 
     if (!context) {
         return <Text>Error: CarpetaContext no disponible. Asegúrate de envolver tu aplicación con CarpetaProvider.</Text>;
@@ -35,17 +37,27 @@ export default function EditarCarpeta() {
     };
 
     return (
-        <View style={styles.container}>
-          <Text style={styles.centeredHeader}>Editar carpeta</Text>
+        <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+          <Text style={[styles.centeredHeader, { color: colores.texto }]}>Editar carpeta</Text>
           
           <TextInput
-              placeholder="Nombre de la carpeta"
-              value={nombreCarpeta}
-              onChangeText={setNombreCarpeta}
-              style={styles.input} 
+            placeholder="Nombre de la carpeta"
+            placeholderTextColor={colores.textoSecundario || '#aaa'}
+            value={nombreCarpeta}
+            onChangeText={setNombreCarpeta}
+            style={[styles.input, {
+              color: colores.texto,
+              borderColor: colores.texto,
+              backgroundColor: colores.inputFondo || 'transparent',
+            }]} 
           />
         
-          <Pressable style={styles.button} onPress={handleEditarCarpeta} accessibilityLabel="Guardar Cambios">
+          <Pressable
+            style={[styles.button, { backgroundColor: colores.primario }]}
+            onPress={handleEditarCarpeta}
+            accessibilityLabel="Guardar Cambios"
+            accessibilityHint="Guarda los cambios realizados a la carpeta actual"
+          >
             <Text style={styles.textcolor}>Guardar Cambios</Text>
           </Pressable>
         </View>
@@ -54,6 +66,7 @@ export default function EditarCarpeta() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     gap: 12, 
   },

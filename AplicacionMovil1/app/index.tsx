@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import logo from '../assets/images/logo.png'; // Asegúrate de que la ruta sea correcta
-import Intro from '../assets/video/intro.mp4';
+import Intro from '../assets/video/intro-final.mp4';
 
 export default function App() {
   const video = useRef<Video>(null);
@@ -148,10 +148,9 @@ const styles = StyleSheet.create({
   },
   videoWeb: {
     width: '100%',
-    height: '150%',
+    height: '100%',
     position: 'fixed',
-    overflow: 'hidden',
-    top: -200,
+    top: 0,
     left: 0,
     zIndex: 0,
   },

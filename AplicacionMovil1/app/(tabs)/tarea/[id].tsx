@@ -1,13 +1,15 @@
+import { useCustomColors } from "@/hooks/useCustomColors";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Modal, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { useState } from "react";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import TareaDetalleC from "../../../components/TareaDetalleC";
 import { useTareas } from "../../../components/TareasContext";
-import { useState } from "react";
 
 export default function TareaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { tareas, eliminarTarea, cambioEstado } = useTareas();
+  const colores = useCustomColors();
 
   const tarea = tareas.find((c) => c.id.toString() === id);
 
@@ -45,7 +47,7 @@ export default function TareaDetalle() {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <View className="flex-1 bg-gray-100" style={[{ backgroundColor: colores.fondo, flex: 1 }]} >
       <TareaDetalleC
         tarea={tarea}
         onEditar={handleEditar}

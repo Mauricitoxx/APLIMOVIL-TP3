@@ -7,17 +7,25 @@
 /* Colores para los temas claro y oscuro */
 export const Colores = {
   claro: {
-    fondo: '#ffffff',
+    fondo: '#B4E6FD',
     texto: '#000000',
+    textoSecundario: "#666",
+    primario: "#4962f2",
     borde: '#dddddd',
     tarjeta: '#f5f5f5',
     icono: '#333333',
+    inputFondo: "#f0f0f0",
+    accionEliminar: "#e74c3c",
   },
   oscuro: {
-    fondo: '#121212',
+    fondo: '#001223',
     texto: '#ffffff',
+    textoSecundario: "#aaa",
+    primario: "#4962f2",
     borde: '#444444',
-    tarjeta: '#1e1e1e',
+    tarjeta: '#012445',
     icono: '#dddddd',
+    inputFondo: "#1a1a1a",
+    accionEliminar: "#ff6b6b",
   },
 };
