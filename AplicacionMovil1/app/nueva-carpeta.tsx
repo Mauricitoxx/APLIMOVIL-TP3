@@ -2,11 +2,13 @@ import { useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CarpetaContext } from '../components/CarpetaContext';
+import { useCustomColors } from '@/hooks/useCustomColors';
 
 const AltaCarpeta: React.FC = () => {
   const [nombreCarpeta, setNombreCarpeta] = useState<string>('');
   const context = useContext(CarpetaContext);
   const router = useRouter(); 
+  const colores = useCustomColors();
 
   if (!context) {
     return <Text>Error: CarpetaContext no disponible. Asegúrate de envolver tu aplicación con CarpetaProvider.</Text>;
@@ -27,18 +29,25 @@ const AltaCarpeta: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.centeredHeader}>Crear una nueva carpeta</Text>
+    <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+      <Text style={[styles.centeredHeader, { color: colores.texto }]}>
+        Crear una nueva carpeta
+      </Text>
       
       <TextInput
         placeholder="Nombre de la carpeta"
+        placeholderTextColor={colores.textoSecundario || '#aaa'}
         value={nombreCarpeta}
         onChangeText={setNombreCarpeta}
-        style={styles.input} 
+        style={[styles.input, {
+          color: colores.texto,
+          borderColor: colores.texto,
+          backgroundColor: colores.inputFondo || 'transparent',
+        }]} 
       />
       
-      <Pressable style={styles.button} onPress={handleGuardarCarpeta} accessibilityLabel="Guardar Cambios">
-        <Text style={styles.textcolor}>Guardar Cambios</Text>
+      <Pressable style={[styles.button, { backgroundColor: colores.primario }]} onPress={handleGuardarCarpeta}>
+        <Text style={styles.textoBoton}>Guardar Cambios</Text>
       </Pressable>
     </View>
   );
@@ -46,6 +55,7 @@ const AltaCarpeta: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     gap: 12, 
   },
@@ -57,24 +67,22 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
     padding: 10,
     borderRadius: 6,
   },
-  button:{
-    backgroundColor: "blue",
+  button: {
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 8,
     alignSelf: "center",
     marginBottom: 20,
-    marginTop:10,
+    marginTop: 10,
   },
-  textcolor: {
+  textoBoton: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-  }
+  },
 });
 
 export default AltaCarpeta;

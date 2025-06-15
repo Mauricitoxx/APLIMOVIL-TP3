@@ -1,10 +1,11 @@
 /* Index representa la Ventana Inicial (Home) */
 
+import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from "expo-router";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../components/CarpetaContext';
@@ -46,6 +47,7 @@ export default function HomeScreen() {
       flex: 1,
       padding: 25,
       gap: 12,
+      backgroundColor: colores.fondo,
     },
     header: {
       fontSize: 30,
@@ -99,9 +101,13 @@ export default function HomeScreen() {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
       <View style={styles.container}>
-        <Text style={[styles.header, { color: colores.texto }]}>Mis Carpetas</Text>
+        <View style={{ alignItems: 'center', marginTop: 20 }}>
+          <TemaCambio />
+        </View>
+
+        <Text style={ styles.header }>Mis Carpetas</Text>
         
           <Pressable
             style={styles.botonCrear}
@@ -159,7 +165,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
 
 
 const modalStyles = StyleSheet.create({

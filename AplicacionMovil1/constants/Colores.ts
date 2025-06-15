@@ -9,15 +9,21 @@ export const Colores = {
   claro: {
     fondo: '#ffffff',
     texto: '#000000',
+    textoSecundario: "#666",
+    primario: "#4962f2",
     borde: '#dddddd',
     tarjeta: '#f5f5f5',
     icono: '#333333',
+    inputFondo: "#f0f0f0"
   },
   oscuro: {
-    fondo: '#121212',
+    fondo: '#000000',
     texto: '#ffffff',
+    textoSecundario: "#aaa",
+    primario: "#4962f2",
     borde: '#444444',
     tarjeta: '#1e1e1e',
     icono: '#dddddd',
+    inputFondo: "#1a1a1a"
   },
 };

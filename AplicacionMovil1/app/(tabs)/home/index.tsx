@@ -1,19 +1,21 @@
 /* Index representa la Ventana Inicial (Home) */
 
-import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../../components/CarpetaContext';
+import TemaCambio from "@/components/CambiarTemaC";
 
 export default function HomeScreen() {
   const context = useContext(CarpetaContext);
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [carpetaIdToDelete, setCarpetaIdToDelete] = useState<string | null>(null);
+  const colores = useCustomColors();
 
   if (!context) {
     return <Text>Error: CarpetaContext no disponible.</Text>;
@@ -37,16 +39,75 @@ export default function HomeScreen() {
     setCarpetaIdToDelete(null);
   };
 
-  const { carpetas, editarCarpeta, eliminarCarpeta } = context;
+  const { carpetas, eliminarCarpeta } = context;
   const { tareas } = useTareas();
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 25,
+      gap: 12,
+      backgroundColor: colores.fondo,
+    },
+    header: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      marginBottom: 16,
+      textAlign: 'center',
+      color: colores.texto,
+    },
+    botonCrear: {
+      backgroundColor: "#4962f2",
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderRadius: 25,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 5,
+      marginBottom:10,
+    },
+    textoBotonCrear: {
+      color: "#fff",
+      fontSize: 16,
+      fontWeight: "600",
+      letterSpacing: 1,
+    },
+    modalOverlay: {
+      position: 'absolute',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modal: {
+      backgroundColor: 'white',
+      padding: 24,
+      borderRadius: 10,
+      width: '80%',
+      elevation: 5,
+    },
+    modalText: {
+      fontSize: 16,
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    modalButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+  });
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
       <View style={styles.container}>
         <View style={{ alignItems: 'center', marginTop: 20 }}>
           <TemaCambio />
         </View>
-        <Text style={styles.header}>Mis Carpetas</Text>
+
+        <Text style={ styles.header }>Mis Carpetas</Text>
         
           <Pressable
             style={styles.botonCrear}
@@ -105,61 +166,6 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 25,
-    gap: 12,
-  },
-  header: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  botonCrear: {
-    backgroundColor: "#4962f2",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    marginBottom:10,
-  },
-  textoBotonCrear: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    letterSpacing: 1,
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modal: {
-    backgroundColor: 'white',
-    padding: 24,
-    borderRadius: 10,
-    width: '80%',
-    elevation: 5,
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-});
 
 const modalStyles = StyleSheet.create({
   centeredView: {
