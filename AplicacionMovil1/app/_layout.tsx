@@ -8,6 +8,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { UsuarioProvider } from '@/components/UsuarioContext'; 
 
 function InnerApp() {
   const { tema } = useCustomTheme();
@@ -44,14 +45,16 @@ export default function RootLayout() {
 
   if (!loaded) return null;
 
-   return (
+  return (
     <SafeAreaProvider>
       <ThemeProviderCustom>
-        <CarpetaProvider>
-          <TareasProvider>
-            <InnerApp />
-          </TareasProvider>
-        </CarpetaProvider>
+        <UsuarioProvider> 
+            <CarpetaProvider> 
+              <TareasProvider>
+                <InnerApp />
+              </TareasProvider>
+            </CarpetaProvider>
+        </UsuarioProvider>
       </ThemeProviderCustom>
     </SafeAreaProvider>
   );

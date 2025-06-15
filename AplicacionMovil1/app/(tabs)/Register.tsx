@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert, Switch, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../components/UsuarioContext'; 
+import { useAuth } from '../../components/UsuarioContext';
 import { Stack } from 'expo-router';
 
 export default function Register() {
@@ -13,6 +13,7 @@ export default function Register() {
 
   const { registrarUsuario, isLoadingAuth, authError } = useAuth(); 
 
+ 
   const theme = darkMode
     ? { 
         bg: '#181c25', card: '#23283a', primary: '#8fa7ff', text: '#fff', 
@@ -45,7 +46,6 @@ export default function Register() {
     }
 
     setLocalError(''); 
-    
     
     const success = registrarUsuario(username, password);
 
@@ -91,7 +91,6 @@ export default function Register() {
           placeholderTextColor={theme.textSecondary}
         />
         {localError ? <Text style={styles.error}>{localError}</Text> : null}
-        {/* Muestra el error del contexto si existe y no hay un error local */}
         {authError && !localError ? <Text style={styles.error}>{authError}</Text> : null} 
         
         <Pressable style={styles.button} onPress={handleRegister} disabled={isLoadingAuth}>

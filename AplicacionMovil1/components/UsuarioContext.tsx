@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { createContext, ReactNode, useEffect, useRef, useState, useContext } from 'react'; // ¡Asegúrate de importar useContext!
 
 export interface Usuario {
   id: string;
@@ -13,6 +13,8 @@ interface UsuarioContextType {
   registrarUsuario: (username: string, password: string) => boolean;
   loginUsuario: (username: string, password: string) => boolean;
   logoutUsuario: () => void;
+  isLoadingAuth: boolean;
+  authError: string | null;
 }
 
 export const UsuarioContext = createContext<UsuarioContextType | undefined>(undefined);
@@ -29,13 +31,19 @@ export const UsuarioProvider: React.FC<UsuarioProviderProps> = ({ children }) =>
   const [usuarioActual, setUsuarioActual] = useState<Usuario | null>(null);
   const nextIdRef = useRef<number>(1);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
 
   useEffect(() => {
     const loadUsuarios = async () => {
       try {
         const storedUsuarios = await AsyncStorage.getItem(USUARIOS_STORAGE_KEY);
         if (storedUsuarios) {
-          setUsuarios(JSON.parse(storedUsuarios));
+          const parsedUsuarios: Usuario[] = JSON.parse(storedUsuarios);
+          setUsuarios(parsedUsuarios);
+          const maxId = parsedUsuarios.reduce((max, user) => Math.max(max, parseInt(user.id)), 0);
+          nextIdRef.current = maxId + 1;
         }
         const storedUsuarioActual = await AsyncStorage.getItem(USUARIO_ACTUAL_KEY);
         if (storedUsuarioActual) {
@@ -80,8 +88,14 @@ export const UsuarioProvider: React.FC<UsuarioProviderProps> = ({ children }) =>
     }
   }, [usuarioActual, isLoaded]);
 
-  const registrarUsuario = (username: string, password: string) => {
-    if (usuarios.some(u => u.username === username)) return false;
+  const registrarUsuario = (username: string, password: string): boolean => {
+    setIsLoadingAuth(true);
+    setAuthError(null);
+    if (usuarios.some(u => u.username === username)) {
+      setAuthError('El nombre de usuario ya existe.');
+      setIsLoadingAuth(false);
+      return false;
+    }
     const nuevoUsuario: Usuario = {
       id: nextIdRef.current.toString(),
       username,
@@ -90,29 +104,45 @@ export const UsuarioProvider: React.FC<UsuarioProviderProps> = ({ children }) =>
     nextIdRef.current += 1;
     setUsuarios(prev => [...prev, nuevoUsuario]);
     setUsuarioActual(nuevoUsuario);
+    setIsLoadingAuth(false);
     return true;
   };
 
-  const loginUsuario = (username: string, password: string) => {
+  const loginUsuario = (username: string, password: string): boolean => {
+    setIsLoadingAuth(true);
+    setAuthError(null);
     const user = usuarios.find(u => u.username === username && u.password === password);
     if (user) {
       setUsuarioActual(user);
+      setIsLoadingAuth(false);
       return true;
     }
+    setAuthError('Credenciales incorrectas.');
+    setIsLoadingAuth(false);
     return false;
   };
 
   const logoutUsuario = () => {
     setUsuarioActual(null);
+    setAuthError(null); 
   };
 
   if (!isLoaded) {
-    return null;
+    return null; 
   }
 
   return (
-    <UsuarioContext.Provider value={{ usuarios, usuarioActual, registrarUsuario, loginUsuario, logoutUsuario }}>
+    <UsuarioContext.Provider value={{ usuarios, usuarioActual, registrarUsuario, loginUsuario, logoutUsuario, isLoadingAuth, authError }}>
       {children}
     </UsuarioContext.Provider>
   );
+};
+
+
+export const useAuth = () => {
+  const context = useContext(UsuarioContext);
+  if (context === undefined) {
+    throw new Error('useAuth debe ser usado dentro de un UsuarioProvider');
+  }
+  return context;
 };
