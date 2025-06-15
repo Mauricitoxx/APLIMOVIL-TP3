@@ -1,4 +1,5 @@
 import FraseMotivacional from '@/components/fraseMotivacional';
+import { useCustomColors } from '@/hooks/useCustomColors';
 import type { AVPlaybackStatus } from 'expo-av';
 import { ResizeMode, Video } from 'expo-av';
 import { useRouter } from 'expo-router';
@@ -15,6 +16,7 @@ export default function App() {
   const floatAnim = useRef(new Animated.Value(0)).current;
   const fraseOpacity = useRef(new Animated.Value(0)).current;
   const bounceAnim = useRef(new Animated.Value(0)).current;
+  const colores = useCustomColors();
 
   // Intenta reproducir el video cuando esté listo para mostrar
   const handleReadyForDisplay = async () => {
@@ -122,7 +124,7 @@ export default function App() {
   }, [floatAnim, fraseOpacity, bounceAnim]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: colores.fondo}]}>
       <Video
         ref={video}
         style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative}
