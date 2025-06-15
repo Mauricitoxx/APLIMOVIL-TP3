@@ -1,14 +1,13 @@
-
 import { CarpetaProvider } from '@/components/CarpetaContext';
 import { TareasProvider } from '@/components/TareasContext';
 import { ThemeProviderCustom, useCustomTheme } from '@/components/TemaContext';
-import { DefaultTheme, DarkTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
+import { useCustomColors } from '@/hooks/useCustomColors';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useCustomColors } from '@/hooks/useCustomColors';
 
 function InnerApp() {
   const { tema } = useCustomTheme();
@@ -29,6 +28,8 @@ function InnerApp() {
           <Stack.Screen name="nueva-tarea" options={{ presentation: 'modal', title: 'Crear Nueva Tarea' }} />
           <Stack.Screen name="editar-tarea/[id]" options={{ presentation: 'modal', title: 'Editar Tarea' }} />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen name="Register" options={{ title: 'Registrarse', headerShown: true }} />
+          <Stack.Screen name="Login" options={{ title: 'Iniciar Sesión', headerShown: true }} />
         </Stack>
         <StatusBar style={tema === 'oscuro' ? 'light' : 'dark'} />
       </View>

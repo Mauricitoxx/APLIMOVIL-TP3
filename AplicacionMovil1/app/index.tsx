@@ -14,7 +14,6 @@ export default function App() {
   const router = useRouter();
   const floatAnim = useRef(new Animated.Value(0)).current;
   const fraseOpacity = useRef(new Animated.Value(0)).current;
-  const bounceAnim = useRef(new Animated.Value(0)).current;
 
   // Intenta reproducir el video cuando esté listo para mostrar
   const handleReadyForDisplay = async () => {
@@ -89,37 +88,8 @@ export default function App() {
       useNativeDriver: true,
     }).start();
 
-    // Dos saltitos rápidos seguidos para el botón
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: -18,
-          duration: 180,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 180,
-          easing: Easing.in(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: -12,
-          duration: 120,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 120,
-          easing: Easing.in(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.delay(1200),
-      ])
-    ).start();
-  }, [floatAnim, fraseOpacity, bounceAnim]);
+    // Eliminado el efecto bounceAnim
+  }, [floatAnim, fraseOpacity]);
 
   return (
     <View style={styles.container}>
@@ -141,22 +111,26 @@ export default function App() {
       )}
       {/* FraseMotivacional al frente y centrado */}
       <Animated.View style={[styles.fraseWrapper, { opacity: fraseOpacity }]} pointerEvents="none">
-        {/* No se pasa style porque FraseMotivacional no acepta prop style */}
         <FraseMotivacional />
       </Animated.View>
       <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
         <Image source={logo} style={{ width: 100, height: 100, marginBottom: 100 }} />
       </Animated.View>
-      <View style={styles.navigateButton}>
-        <Animated.View style={{ transform: [{ translateY: bounceAnim }] }}>
-          <TouchableOpacity
-            style={[styles.transparentButton, { marginTop: 20 }]}
-            activeOpacity={0.7}
-            onPress={() => router.push('/home')}
-          >
-            <Text style={styles.buttonText}>Ir a carpetas</Text>
-          </TouchableOpacity>
-        </Animated.View>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={[styles.transparentButton, { marginTop: 20 }]}
+          activeOpacity={0.7}
+          onPress={() => router.push('/Login')}
+        >
+          <Text style={styles.buttonText}>Iniciar sesión</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.transparentButton, { marginTop: 20 }]}
+          activeOpacity={0.7}
+          onPress={() => router.push('/Register')}
+        >
+          <Text style={styles.buttonText}>Registrarse</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -197,18 +171,13 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 6,
   },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: 'rgba(255, 0, 0, 0.8)',
-    zIndex: 3,
-  },
-  navigateButton: {
+  buttonsContainer: {
     marginTop: 200,
     top: 100,
     zIndex: 3,
     alignItems: 'center',
+    flexDirection: 'column',
+    gap: 16, // Espacio entre botones (puedes quitar si da error en RN antiguo)
   },
   transparentButton: {
     backgroundColor: 'rgb(255, 255, 255)', // completamente transparente
@@ -241,4 +210,3 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
-
