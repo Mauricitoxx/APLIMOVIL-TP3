@@ -1,21 +1,25 @@
-import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
+import UserBubble from "@/components/UserBubble";
+import { UsuarioContext } from "@/components/UsuarioContext";
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../../components/CarpetaContext';
-import { useAuth } from '../../../components/UsuarioContext'; 
-
 export default function HomeScreen() {
+  // Add this line to extract usuarioActual from context, if it exists
+  const { usuarioActual } =useContext(UsuarioContext);
   const context = useContext(CarpetaContext);
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [carpetaIdToDelete, setCarpetaIdToDelete] = useState<string | null>(null);
   const colores = useCustomColors();
-  const { usuarioActual } = useAuth(); 
+
+  // Add theme state and toggle function
+  const [tema, setTema] = useState<'oscuro' | 'claro'>('claro');
+  const toggleTheme = () => setTema((prev) => (prev === 'oscuro' ? 'claro' : 'oscuro'));
 
   if (!context) {
     return <Text>Error: CarpetaContext no disponible.</Text>;
@@ -48,16 +52,16 @@ export default function HomeScreen() {
     setCarpetaIdToDelete(null);
   };
 
-  const { carpetas, eliminarCarpeta } = context;
+  const { carpetas, eliminarCarpeta } = context; 
   const { tareas } = useTareas(); 
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
       <View style={styles.container}>
-        <View style={{ alignItems: 'center', marginTop: 20 }}>
-          <TemaCambio />
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 10 }}>
+          <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
         </View>
-        <Text style={[styles.header, { color: colores.texto }]}>Mis Carpetas </Text> 
+        <Text style={[styles.header, { color: colores.texto }]}>Mis Carpetas</Text> 
         
         <Pressable
           style={styles.botonCrear}

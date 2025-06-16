@@ -1,7 +1,7 @@
-import { Tarea } from '@/types/Tarea'; 
+import { Tarea } from '@/types/Tarea';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useEffect, useRef, useState } from 'react';
-import { useAuth } from './UsuarioContext'; 
+import { useAuth } from './UsuarioContext';
 
 export interface Carpeta {
   id: string;
@@ -18,6 +18,7 @@ interface CarpetaContextType {
   agregarCarpeta: (nombre: string) => void;
   editarCarpeta: (id: string, nombre: string) => void;
   eliminarCarpeta: (id: string) => void;
+  borrarCarpetasSinUsuario: () => void; // <-- agregar tipo para la nueva función
 }
 
 export const CarpetaContext = createContext<CarpetaContextType | undefined>(undefined);
@@ -124,6 +125,17 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
     });
   };
 
+  // Borra carpetas y sus tareas asociadas que no tienen usuarioId asignado
+  const borrarCarpetasSinUsuario = () => {
+    setTodasLasCarpetas(prevCarpetas => {
+      const carpetasConUsuario = prevCarpetas.filter(c => c.usuarioId && c.usuarioId !== '');
+      const idsConUsuario = new Set(carpetasConUsuario.map(c => c.id));
+      // Borra tareas asociadas a carpetas sin usuario
+      setTareas(prevTareas => prevTareas.filter(t => idsConUsuario.has(t.carpetaId)));
+      return carpetasConUsuario;
+    });
+  };
+
   if (!isLoaded) {
     return null; 
   }
@@ -134,7 +146,8 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
       tareas, 
       agregarCarpeta,
       editarCarpeta,
-      eliminarCarpeta
+      eliminarCarpeta,
+      borrarCarpetasSinUsuario // <-- exportar la función
     }}>
       {children}
     </CarpetaContext.Provider>

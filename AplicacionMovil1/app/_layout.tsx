@@ -1,19 +1,27 @@
-import { CarpetaProvider } from '@/components/CarpetaContext';
+import { CarpetaContext, CarpetaProvider } from '@/components/CarpetaContext';
 import { TareasProvider } from '@/components/TareasContext';
 import { ThemeProviderCustom, useCustomTheme } from '@/components/TemaContext';
+import { UsuarioProvider } from '@/components/UsuarioContext';
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { UsuarioProvider } from '@/components/UsuarioContext'; 
 
 function InnerApp() {
   const { tema } = useCustomTheme();
   const colores = useCustomColors();
   const theme = tema === 'claro' ? DefaultTheme : DarkTheme;
+  const carpetaContext = useContext(CarpetaContext);
+
+  useEffect(() => {
+    if (carpetaContext && carpetaContext.borrarCarpetasSinUsuario) {
+      carpetaContext.borrarCarpetasSinUsuario();
+    }
+  }, []);
 
   return (
     <NavigationThemeProvider value={theme}>
