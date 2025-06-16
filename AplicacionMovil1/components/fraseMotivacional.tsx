@@ -14,7 +14,7 @@ export default function FraseMotivacional() {
   useEffect(() => {
     const fetchFrase = async () => {
       try {
-        const response = await fetch("https://api.quotable.io/random");
+        const response = await fetch("http://api.quotable.io/random");
         if (!response.ok) throw new Error("Error al obtener la frase");
         const data = await response.json();
         setFrase({ content: data.content, author: data.author });
@@ -49,14 +49,16 @@ const styles = StyleSheet.create({
   cita: {
     textAlign: "center",
     fontStyle: "italic",
-    fontSize: 16,
-    color: "#FFFFFF",
-    marginBottom: 5,
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "rgb(255, 255, 255)", // Color de texto con opacidad
+    marginBottom: 10,
   },
   autor: {
     fontWeight: "bold",
     textAlign: "center",
-    color: "#3348ff",
+    color: "rgba(235, 255, 253, 0.8)", 
+    fontSize: 20,
   },
   error: {
     color: "red",
