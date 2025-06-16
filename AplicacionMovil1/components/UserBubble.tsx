@@ -1,8 +1,8 @@
 import { useCustomColors } from '@/hooks/useCustomColors';
 import React, { useContext, useState } from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import TemaCambio from './CambiarTemaC';
 import { CarpetaContext } from './CarpetaContext';
+import TemaCambio from './SwitchTema';
 import { useTareas } from './TareasContext';
 import { useAuth } from './UsuarioContext';
 
@@ -74,8 +74,8 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
               <FlatList
                 data={tareasCompletadas}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => <Text style={[styles.taskDone, { color: colores.done }]}>✔ {item.titulo}</Text>}
-                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.notDone }]}>No hay tareas completadas.</Text>}
+                renderItem={({ item }) => <Text style={[styles.taskDone, { color: colores.texto}]}>✔ {item.titulo}</Text>}
+                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.texto }]}>No hay tareas completadas.</Text>}
               />
             )}
             {/* Tareas no realizadas colapsable */}
@@ -88,8 +88,8 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
               <FlatList
                 data={tareasUsuario.filter(t => t.estado !== 'completada')}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => <Text style={[styles.taskNotDone, { color: colores.notDone }]}>✗ {item.titulo}</Text>}
-                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.notDone }]}>No hay tareas pendientes.</Text>}
+                renderItem={({ item }) => <Text style={[styles.taskNotDone, { color: colores.texto }]}>✗ {item.titulo}</Text>}
+                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.accionEliminar }]}>No hay tareas pendientes.</Text>}
               />
             )}
           </View>

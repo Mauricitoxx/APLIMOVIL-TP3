@@ -7,6 +7,7 @@ import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } 
 import ConfettiCannon from "react-native-confetti-cannon";
 import { CarpetaContext } from "../../components/CarpetaContext";
 import { useTareas } from "../../components/TareasContext";
+import UserBubble from "@/components/UserBubble";
 
 export default function CarpetaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -92,7 +93,7 @@ export default function CarpetaDetalle() {
     setShowConfirmModal(false); // Oculta el modal
     setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
   };
-
+  const [tema, setTema] = useState<'oscuro' | 'claro'>('claro');
   // Modifica la función para cambiar el estado de la tarea
   const handleCambioEstado = (id: string) => {
     const tarea = tareas.find(t => t.id === id);
@@ -124,6 +125,7 @@ export default function CarpetaDetalle() {
 
   return (
     <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+       <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
       <Text style={[styles.header, { color: colores.texto }]}>{carpeta.nombre}</Text>
       <Pressable
         style={styles.botonCrear}

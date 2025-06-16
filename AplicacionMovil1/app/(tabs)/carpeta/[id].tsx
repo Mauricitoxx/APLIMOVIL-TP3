@@ -1,4 +1,5 @@
 import { TareaCard } from "@/components/TareaCard";
+import UserBubble from "@/components/UserBubble";
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -87,12 +88,14 @@ export default function CarpetaDetalle() {
     setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
   };
 
+  const toggleTheme = () => setTema((prev) => (prev === 'oscuro' ? 'claro' : 'oscuro'));
+
   // Función que se llama si el usuario cancela la eliminación en el modal
   const handleCancelDelete = () => {
     setShowConfirmModal(false); // Oculta el modal
     setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
   };
-
+  const [tema, setTema] = useState<'oscuro' | 'claro'>('claro');
   // Modifica la función para cambiar el estado de la tarea
   const handleCambioEstado = (id: string) => {
     const tarea = tareas.find(t => t.id === id);
@@ -124,6 +127,9 @@ export default function CarpetaDetalle() {
 
   return (
     <View style={[styles.container, { backgroundColor: colores.fondo }]}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 10 }}>
+          <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
+        </View>
       <Text style={[styles.header, { color: colores.texto }]}>{carpeta.nombre}</Text>
       <Pressable
         style={styles.botonCrear}
