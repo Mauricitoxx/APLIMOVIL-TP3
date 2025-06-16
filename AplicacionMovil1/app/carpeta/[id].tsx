@@ -125,7 +125,6 @@ export default function CarpetaDetalle() {
 
   return (
     <View style={[styles.container, { backgroundColor: colores.fondo }]}>
-       <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
       <Text style={[styles.header, { color: colores.texto }]}>{carpeta.nombre}</Text>
       <Pressable
         style={styles.botonCrear}

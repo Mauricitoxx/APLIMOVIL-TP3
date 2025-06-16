@@ -1,5 +1,4 @@
 import { TareaCard } from "@/components/TareaCard";
-import UserBubble from "@/components/UserBubble";
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -127,9 +126,6 @@ export default function CarpetaDetalle() {
 
   return (
     <View style={[styles.container, { backgroundColor: colores.fondo }]}>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 10 }}>
-          <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
-        </View>
       <Text style={[styles.header, { color: colores.texto }]}>{carpeta.nombre}</Text>
       <Pressable
         style={styles.botonCrear}

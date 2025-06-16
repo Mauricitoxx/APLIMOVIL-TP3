@@ -13,29 +13,26 @@ type UserBubbleProps = {
 };
 
 export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
-  const { usuarioActual } = useAuth();
+  const { usuarioActual, logoutUsuario } = useAuth();
+  const colores = useCustomColors();  
+  const { tareas } = useTareas();
+  const carpetaContext = useContext(CarpetaContext);
+  const carpetasUsuario = carpetaContext?.carpetas || [];
+  const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
+
+  const [mostrarRealizadas, setMostrarRealizadas] = useState(true);
+  const [mostrarNoRealizadas, setMostrarNoRealizadas] = useState(true);
+  const [visible, setVisible] = useState(false);  
+  
+  const router = useRouter();
 
   if (!usuarioActual) {
-    // Si no hay usuario, mostramos mensaje de carga antes de usar otros hooks
-    const colores = useCustomColors();
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ fontSize: 18, color: colores.texto }}>Cargando o redirigiendo...</Text>
       </View>
     );
   }
-
-  // A partir de acá es seguro usar el resto de hooks
-  const colores = useCustomColors();
-  const { tareas } = useTareas();
-  const carpetaContext = useContext(CarpetaContext);
-  const carpetasUsuario = carpetaContext?.carpetas || [];
-  const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
-  const [mostrarRealizadas, setMostrarRealizadas] = useState(true);
-  const [mostrarNoRealizadas, setMostrarNoRealizadas] = useState(true);
-  const { logoutUsuario } = useAuth();
-  const router = useRouter();
-  const [visible, setVisible] = useState(false);
 
   const tareasUsuario = tareas.filter(t => carpetasIdsUsuario.has(t.carpetaId));
   const tareasCompletadas = tareasUsuario.filter(t => t.estado === 'completada');
@@ -118,8 +115,11 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
             <View style={{ alignItems: 'center', marginTop: 24 }}>
               <TouchableOpacity
                 onPress={() => {
-                  logoutUsuario();
-                  router.replace('/');
+                  setVisible(false);
+                  setTimeout(() => {
+                    logoutUsuario();
+                    router.replace('/');
+                  }, 300);
                 }}
                 style={{
                   backgroundColor: colores.accionEliminar,
