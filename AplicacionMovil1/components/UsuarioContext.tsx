@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useEffect, useRef, useState, useContext } from 'react'; // ¡Asegúrate de importar useContext!
+import React, { createContext, ReactNode, useEffect, useRef, useState, useContext } from 'react'; 
 
 export interface Usuario {
   id: string;
