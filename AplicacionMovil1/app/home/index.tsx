@@ -3,6 +3,8 @@
 import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
+import { useCustomTheme } from "@/components/TemaContext";
+import UserBubble from "@/components/UserBubble";
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
@@ -10,12 +12,15 @@ import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../components/CarpetaContext';
 
+
+
 export default function HomeScreen() {
   const context = useContext(CarpetaContext);
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [carpetaIdToDelete, setCarpetaIdToDelete] = useState<string | null>(null);
   const colores = useCustomColors();
+  const { tema, toggleTheme } = useCustomTheme();
 
   if (!context) {
     return <Text>Error: CarpetaContext no disponible.</Text>;
@@ -45,7 +50,10 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
       <View style={styles.container}>
-        <View style={{ alignItems: 'center', marginTop: 20 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 10 }}>
+          <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
+        </View>
+        <View style={{ alignItems: 'center', marginTop: 10 }}>
           <TemaCambio />
         </View>
         <Text style={[styles.header, { color : colores.texto }]}>Mis Carpetas</Text>
