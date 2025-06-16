@@ -9,7 +9,6 @@ import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../../components/CarpetaContext';
 export default function HomeScreen() {
-  // Add this line to extract usuarioActual from context, if it exists
   const { usuarioActual } =useContext(UsuarioContext);
   const context = useContext(CarpetaContext);
   const router = useRouter();
@@ -17,7 +16,6 @@ export default function HomeScreen() {
   const [carpetaIdToDelete, setCarpetaIdToDelete] = useState<string | null>(null);
   const colores = useCustomColors();
 
-  // Add theme state and toggle function
   const [tema, setTema] = useState<'oscuro' | 'claro'>('claro');
   const toggleTheme = () => setTema((prev) => (prev === 'oscuro' ? 'claro' : 'oscuro'));
 

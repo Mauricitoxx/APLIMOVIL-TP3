@@ -5,7 +5,7 @@ import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import logo from '../assets/images/logo.png'; // Asegúrate de que la ruta sea correcta
+import logo from '../assets/images/logo.png'; 
 import Intro from '../assets/video/intro-final.mp4';
 
 export default function App() {
@@ -75,7 +75,7 @@ export default function App() {
       useNativeDriver: true,
     }).start();
 
-    // Eliminado el efecto bounceAnim
+    
   }, [floatAnim, fraseOpacity]);
 
   return (
@@ -165,10 +165,10 @@ const styles = StyleSheet.create({
     zIndex: 3,
     alignItems: 'center',
     flexDirection: 'column',
-    gap: 16, // Espacio entre botones (puedes quitar si da error en RN antiguo)
+    gap: 16, 
   },
   transparentButton: {
-    backgroundColor: 'rgb(255, 255, 255)', // completamente transparente
+    backgroundColor: 'rgb(255, 255, 255)', 
     borderWidth: 2,
     borderColor: '#fff',
     borderRadius: 10,

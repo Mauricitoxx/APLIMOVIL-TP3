@@ -47,9 +47,6 @@ export default function CarpetaDetalle() {
   // Filtrar tareas por carpetaId y eliminar tareas sin carpetaId
   let tareasCarpeta = tareas.filter(t => t.carpetaId === id);
 
-  // Eliminar tareas que no tengan carpetaId (limpieza)
-  // Esta lógica podría ser mejor manejada en un useEffect o en el contexto de tareas
-  // para evitar ejecuciones repetidas en cada renderizado.
   if (tareas.some(t => !t.carpetaId)) {
     tareas
       .filter(t => !t.carpetaId)
@@ -72,7 +69,6 @@ export default function CarpetaDetalle() {
     return prioridadOrden[b.prioridad] - prioridadOrden[a.prioridad];
   });
 
-  // *** FUNCIÓN MODIFICADA PARA PEDIR CONFIRMACIÓN ***
   const confirmarEliminacion = (tareaId: string) => {
     // Establece el ID de la tarea a eliminar y muestra el modal
     setTareaIdToDelete(tareaId);
@@ -82,19 +78,19 @@ export default function CarpetaDetalle() {
   // Función que se llama si el usuario confirma la eliminación en el modal
   const handleConfirmDelete = () => {
     if (tareaIdToDelete) {
-      eliminarTarea(tareaIdToDelete); // Ahora sí, elimina la tarea
+      eliminarTarea(tareaIdToDelete);
     }
-    setShowConfirmModal(false); // Oculta el modal
-    setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
+    setShowConfirmModal(false);
+    setTareaIdToDelete(null);
   };
 
   // Función que se llama si el usuario cancela la eliminación en el modal
   const handleCancelDelete = () => {
-    setShowConfirmModal(false); // Oculta el modal
-    setTareaIdToDelete(null); // Limpia el ID de la tarea a eliminar
+    setShowConfirmModal(false); 
+    setTareaIdToDelete(null); 
   };
   const [tema, setTema] = useState<'oscuro' | 'claro'>('claro');
-  // Modifica la función para cambiar el estado de la tarea
+
   const handleCambioEstado = (id: string) => {
     const tarea = tareas.find(t => t.id === id);
     if (tarea) {
@@ -216,12 +212,11 @@ export default function CarpetaDetalle() {
           ListEmptyComponent={<Text style={styles.noTasks}>No hay tareas en esta carpeta.</Text>}
         />       
 
-      {/* *** MODAL DE CONFIRMACIÓN INTEGRADO *** */}
       <Modal
         animationType="fade"
         transparent={true}
         visible={showConfirmModal}
-        onRequestClose={handleCancelDelete} // Para manejar el botón de retroceso en Android
+        onRequestClose={handleCancelDelete}
       >
         <View style={modalStyles.centeredView}>
           <View style={modalStyles.modalView}>
@@ -471,7 +466,7 @@ textoBotonCrear: {
   },
 });
 
-// Estilos para el modal de confirmación (pueden ser parte de styles o separados)
+// Estilos para el modal de confirmación 
 const modalStyles = StyleSheet.create({
   centeredView: {
     flex: 1,
