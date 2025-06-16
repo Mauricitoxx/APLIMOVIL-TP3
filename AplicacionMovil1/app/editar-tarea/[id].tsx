@@ -53,34 +53,25 @@ const handleEditar = () => {
   // Limpiar cualquier error previo
   setError("");
 
-  // Asegurarse de que el ID de la tarea y el objeto de la tarea no sean nulos o indefinidos.
-  // Esto previene errores de tiempo de ejecución si los parámetros no están disponibles.
   if (!id || !tarea) {
     setError("Error: ID de tarea o datos de tarea no disponibles para edición.");
     return;
   }
 
-  // Llamar a la función editarTarea de tu contexto.
-  // Se espera que esta función actualice el estado global de las tareas.
   editarTarea(
-    id, // El ID de la tarea a editar (ya validado)
+    id, 
     {
-      ...tarea, // Copia los datos existentes de la tarea
-      titulo,      // Actualiza el título con el nuevo valor
-      descripcion, // Actualiza la descripción con el nuevo valor
-      prioridad,   // Actualiza la prioridad con el nuevo valor
-      // Asegúrate de que carpetaId siempre sea un string para consistencia.
-      // Si tarea.carpetaId es null/undefined, se usará una cadena vacía.
+      ...tarea, 
+      titulo,     
+      descripcion, 
+      prioridad,  
       carpetaId: String(tarea.carpetaId || ""),
     },
-    // También pasa el carpetaId como un string para el segundo argumento de editarTarea (si aplica).
+
     String(tarea.carpetaId || "")
   );
 
-  // *** CAMBIO CRÍTICO AQUÍ ***
-  // En lugar de router.replace, que puede causar duplicados o problemas de pila,
-  // simplemente volvemos a la pantalla anterior (la carpeta).
-  // Como `editarTarea` ya actualizó el contexto, la carpeta se mostrará con los cambios.
+
   router.back(); 
 
 };

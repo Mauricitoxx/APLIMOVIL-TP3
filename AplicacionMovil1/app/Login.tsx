@@ -3,14 +3,14 @@ import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { UsuarioContext } from '../components/UsuarioContext'; // Importa el contexto
+import { UsuarioContext } from '../components/UsuarioContext';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
-  const usuarioContext = useContext(UsuarioContext); // Usa el contexto
+  const usuarioContext = useContext(UsuarioContext); 
   const colores = useCustomColors();
   // Paletas de colores para ambos modos
   const theme = darkMode

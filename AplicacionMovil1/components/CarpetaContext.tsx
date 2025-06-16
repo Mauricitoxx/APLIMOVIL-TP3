@@ -171,7 +171,7 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
       agregarCarpeta,
       editarCarpeta,
       eliminarCarpeta,
-      borrarCarpetasSinUsuario // <-- exportar la función
+      borrarCarpetasSinUsuario 
     }}>
       {children}
     </CarpetaContext.Provider>
