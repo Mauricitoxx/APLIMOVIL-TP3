@@ -1,6 +1,7 @@
 import FraseMotivacional from '@/components/fraseMotivacional';
 import type { AVPlaybackStatus } from 'expo-av';
 import { ResizeMode, Video } from 'expo-av';
+import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -44,25 +45,11 @@ export default function App() {
       } else {
         console.log('video.current o métodos no disponibles en interval');
       }
-    }, 1000); // Verifica cada segundo
+    },10000000);
     return () => clearInterval(interval);
   }, []);
 
   // Maneja el estado del video y reinicia si se detiene inesperadamente
-  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    setStatus(status);
-    setIsBuffering(status.isLoaded ? status.isBuffering : false);
-    console.log('handlePlaybackStatusUpdate', status);
-    // Si el video se detiene inesperadamente, intenta reproducirlo de nuevo
-    if (status.isLoaded && !status.isPlaying && !status.isBuffering) {
-      if (video.current && video.current.playAsync) {
-        video.current.playAsync();
-        console.log('Video playAsync called from handlePlaybackStatusUpdate');
-      } else {
-        console.log('video.current o playAsync no disponible en handlePlaybackStatusUpdate');
-      }
-    }
-  };
 
   useEffect(() => {
     Animated.loop(
@@ -95,26 +82,27 @@ export default function App() {
     <View style={styles.container}>
       <Video
         ref={video}
-        style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative}
+        style={[Platform.OS === 'web' ? styles.videoWeb : styles.videoNative, { backdropFilter: 'blur(0px)' }]}
         source={Intro}
         useNativeControls={false}
         resizeMode={ResizeMode.COVER}
         isLooping
         shouldPlay={true}
         onReadyForDisplay={handleReadyForDisplay}
-        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
       />
+      <BlurView intensity={30} tint="dark" style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative} />
       {isBuffering && (
         <View style={styles.bufferingOverlay}>
           <Text style={styles.bufferingText}>Cargando video...</Text>
         </View>
       )}
+      <BlurView intensity={50} style={{}} />
       {/* FraseMotivacional al frente y centrado */}
       <Animated.View style={[styles.fraseWrapper, { opacity: fraseOpacity }]} pointerEvents="none">
         <FraseMotivacional />
       </Animated.View>
       <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
-        <Image source={logo} style={{ width: 100, height: 100, marginBottom: 100 }} />
+        <Image source={logo} style={{ width: 100, height: 100, marginBottom: 100}} />
       </Animated.View>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -142,16 +130,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ecf0f1',
     alignItems: 'center',
+  
   },
   videoNative: {
     ...StyleSheet.absoluteFillObject,
   },
   videoWeb: {
-    width: '100%',
-    height: '100%',
+    width: '190%',
+    height: '150%',
     position: 'fixed',
-    top: 0,
-    left: 0,
+    top: -150,
+    left: -250,
     zIndex: 0,
   },
   fraseWrapper: {

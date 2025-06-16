@@ -1,7 +1,7 @@
 import FraseMotivacional from '@/components/fraseMotivacional';
-import { useCustomColors } from '@/hooks/useCustomColors';
 import type { AVPlaybackStatus } from 'expo-av';
 import { ResizeMode, Video } from 'expo-av';
+import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -15,8 +15,6 @@ export default function App() {
   const router = useRouter();
   const floatAnim = useRef(new Animated.Value(0)).current;
   const fraseOpacity = useRef(new Animated.Value(0)).current;
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-  const colores = useCustomColors();
 
   // Intenta reproducir el video cuando esté listo para mostrar
   const handleReadyForDisplay = async () => {
@@ -47,25 +45,11 @@ export default function App() {
       } else {
         console.log('video.current o métodos no disponibles en interval');
       }
-    }, 1000); // Verifica cada segundo
+    },10000000);
     return () => clearInterval(interval);
   }, []);
 
   // Maneja el estado del video y reinicia si se detiene inesperadamente
-  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    setStatus(status);
-    setIsBuffering(status.isLoaded ? status.isBuffering : false);
-    console.log('handlePlaybackStatusUpdate', status);
-    // Si el video se detiene inesperadamente, intenta reproducirlo de nuevo
-    if (status.isLoaded && !status.isPlaying && !status.isBuffering) {
-      if (video.current && video.current.playAsync) {
-        video.current.playAsync();
-        console.log('Video playAsync called from handlePlaybackStatusUpdate');
-      } else {
-        console.log('video.current o playAsync no disponible en handlePlaybackStatusUpdate');
-      }
-    }
-  };
 
   useEffect(() => {
     Animated.loop(
@@ -91,74 +75,54 @@ export default function App() {
       useNativeDriver: true,
     }).start();
 
-    // Dos saltitos rápidos seguidos para el botón
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(bounceAnim, {
-          toValue: -18,
-          duration: 180,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 180,
-          easing: Easing.in(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: -12,
-          duration: 120,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 120,
-          easing: Easing.in(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.delay(1200),
-      ])
-    ).start();
-  }, [floatAnim, fraseOpacity, bounceAnim]);
+    // Eliminado el efecto bounceAnim
+  }, [floatAnim, fraseOpacity]);
 
   return (
-    <View style={[styles.container, {backgroundColor: colores.fondo}]}>
+    <View style={styles.container}>
       <Video
-        ref={video}
-        style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative}
-        source={Intro}
-        useNativeControls={false}
-        resizeMode={ResizeMode.COVER}
-        isLooping
-        shouldPlay={true}
-        onReadyForDisplay={handleReadyForDisplay}
-        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+      ref={video}
+      style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative}
+      source={Intro}
+      useNativeControls={false}
+      resizeMode={ResizeMode.COVER}
+      isLooping
+      shouldPlay={true}
+      onReadyForDisplay={handleReadyForDisplay}
+      />
+      {/* BlurView como filtro de blur */}
+      <BlurView
+      intensity={30}
+      tint="dark"
+      style={Platform.OS === 'web' ? styles.videoWeb : styles.videoNative}
       />
       {isBuffering && (
-        <View style={styles.bufferingOverlay}>
-          <Text style={styles.bufferingText}>Cargando video...</Text>
-        </View>
+      <View style={styles.bufferingOverlay}>
+        <Text style={styles.bufferingText}>Cargando video...</Text>
+      </View>
       )}
       {/* FraseMotivacional al frente y centrado */}
       <Animated.View style={[styles.fraseWrapper, { opacity: fraseOpacity }]} pointerEvents="none">
-        {/* No se pasa style porque FraseMotivacional no acepta prop style */}
-        <FraseMotivacional />
+      <FraseMotivacional />
       </Animated.View>
       <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
-        <Image source={logo} style={{ width: 100, height: 100, marginBottom: 100 }} />
+      <Image source={logo} style={{ width: 100, height: 100, marginBottom: 100 }} />
       </Animated.View>
-      <View style={styles.navigateButton}>
-        <Animated.View style={{ transform: [{ translateY: bounceAnim }] }}>
-          <TouchableOpacity
-            style={[styles.transparentButton, { marginTop: 20 }]}
-            activeOpacity={0.7}
-            onPress={() => router.push('/home')}
-          >
-            <Text style={styles.buttonText}>Ir a carpetas</Text>
-          </TouchableOpacity>
-        </Animated.View>
+      <View style={styles.buttonsContainer}>
+      <TouchableOpacity
+        style={[styles.transparentButton, { marginTop: 20 }]}
+        activeOpacity={0.7}
+        onPress={() => router.push('/Login')}
+      >
+      <Text style={styles.buttonText}>Iniciar sesión</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.transparentButton, { marginTop: 20 }]}
+        activeOpacity={0.7}
+        onPress={() => router.push('/Register')}
+      >
+        <Text style={styles.buttonText}>Registrarse</Text>
+      </TouchableOpacity>
       </View>
     </View>
   );
@@ -175,11 +139,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   videoWeb: {
-    width: '100%',
-    height: '100%',
+    width: '190%',
+    height: '150%',
     position: 'fixed',
-    top: 0,
-    left: 0,
+    backdropFilter: 'blur(120px)',
+    top: -150,
+    left: -250,
     zIndex: 0,
   },
   fraseWrapper: {
@@ -191,25 +156,20 @@ const styles = StyleSheet.create({
   },
   fraseText: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 40,
     fontWeight: 'bold',
     textAlign: 'center',
-    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
     textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 6,
+    textShadowRadius: 10,
   },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: 'rgba(255, 0, 0, 0.8)',
-    zIndex: 3,
-  },
-  navigateButton: {
+  buttonsContainer: {
     marginTop: 200,
     top: 100,
     zIndex: 3,
     alignItems: 'center',
+    flexDirection: 'column',
+    gap: 16, // Espacio entre botones (puedes quitar si da error en RN antiguo)
   },
   transparentButton: {
     backgroundColor: 'rgb(255, 255, 255)', // completamente transparente
@@ -242,4 +202,3 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
-
