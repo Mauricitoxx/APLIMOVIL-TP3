@@ -10,15 +10,13 @@ export interface Carpeta {
   usuarioId: string; 
 }
 
-
-
 interface CarpetaContextType {
   carpetas: Carpeta[];
   tareas: Tarea[]; 
   agregarCarpeta: (nombre: string) => void;
   editarCarpeta: (id: string, nombre: string) => void;
   eliminarCarpeta: (id: string) => void;
-  borrarCarpetasSinUsuario: () => void; // <-- agregar tipo para la nueva función
+  borrarCarpetasSinUsuario: () => void;
 }
 
 export const CarpetaContext = createContext<CarpetaContextType | undefined>(undefined);
@@ -46,12 +44,12 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
       try {
         const storedCarpetas = await AsyncStorage.getItem(CARPETAS_STORAGE_KEY);
         const storedNextId = await AsyncStorage.getItem(NEXT_CARPETA_ID_KEY);
+        let parsedCarpetas : Carpeta[] = []
+
 
         if (storedCarpetas) {
-
-          const parsedCarpetas: Carpeta[] = JSON.parse(storedCarpetas);
+          parsedCarpetas = JSON.parse(storedCarpetas);
           setTodasLasCarpetas(parsedCarpetas);
-
           const maxId = parsedCarpetas.reduce((max, carpeta) => Math.max(max, parseInt(carpeta.id)), 0);
           nextIdRef.current = maxId + 1;
         } else {
@@ -67,6 +65,32 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
 
     loadCarpetas();
   }, []);
+
+  useEffect(() =>{
+    if (!isLoaded || !usuarioActual) return;
+
+    const usuarioCargado = todasLasCarpetas.some(c => c.usuarioId === usuarioActual.id);
+
+    if (usuarioActual.username === "Usuario1" && usuarioActual.password === "Usuario1" && !usuarioCargado){
+      const carpetasNuevas = [
+        {
+          id: nextIdRef.current.toString(),
+          nombre : "Universidad",
+          color: colores_carpeta[Math.floor(Math.random() * colores_carpeta.length)],
+          usuarioId: usuarioActual.id,
+        },
+        {
+          id: (nextIdRef.current + 1).toString(),
+          nombre : "Trabajo",
+          color: colores_carpeta[Math.floor(Math.random() * colores_carpeta.length)],
+          usuarioId: usuarioActual.id,
+        },
+      ];
+
+      nextIdRef.current += 2;
+      setTodasLasCarpetas(prev => [...prev, ...carpetasNuevas]);
+    }
+  }, [isLoaded, usuarioActual])
 
   useEffect(() => {
     if (isLoaded) {

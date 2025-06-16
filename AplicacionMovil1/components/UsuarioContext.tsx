@@ -46,7 +46,8 @@ export const UsuarioProvider: React.FC<UsuarioProviderProps> = ({ children }) =>
           const maxId = parsedUsuarios.reduce((max, user) => Math.max(max, parseInt(user.id)), 0);
           nextIdRef.current = maxId + 1;
         }
-        // Ensure default user exists
+
+        // Creacion de Usuario Base 
         if (!parsedUsuarios.some(u => u.username === "Usuario1" && u.password === "Usuario1")) {
           const defaultUser: Usuario = {
             id: nextIdRef.current.toString(),
