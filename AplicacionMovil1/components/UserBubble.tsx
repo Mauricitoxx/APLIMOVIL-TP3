@@ -1,4 +1,5 @@
 import { useCustomColors } from '@/hooks/useCustomColors';
+import { useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CarpetaContext } from './CarpetaContext';
@@ -12,23 +13,29 @@ type UserBubbleProps = {
 };
 
 export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
-  const [visible, setVisible] = useState(false);
-  const colores = useCustomColors();
   const { usuarioActual } = useAuth();
-  const { tareas } = useTareas();
-  const carpetaContext = useContext(CarpetaContext);
-  const carpetasUsuario = carpetaContext?.carpetas || [];
-  const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
-  const [mostrarRealizadas, setMostrarRealizadas] = useState(true);
-  const [mostrarNoRealizadas, setMostrarNoRealizadas] = useState(true);
 
   if (!usuarioActual) {
+    // Si no hay usuario, mostramos mensaje de carga antes de usar otros hooks
+    const colores = useCustomColors();
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ fontSize: 18, color: colores.texto }}>Cargando o redirigiendo...</Text>
       </View>
     );
   }
+
+  // A partir de acá es seguro usar el resto de hooks
+  const colores = useCustomColors();
+  const { tareas } = useTareas();
+  const carpetaContext = useContext(CarpetaContext);
+  const carpetasUsuario = carpetaContext?.carpetas || [];
+  const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
+  const [mostrarRealizadas, setMostrarRealizadas] = useState(true);
+  const [mostrarNoRealizadas, setMostrarNoRealizadas] = useState(true);
+  const { logoutUsuario } = useAuth();
+  const router = useRouter();
+  const [visible, setVisible] = useState(false);
 
   const tareasUsuario = tareas.filter(t => carpetasIdsUsuario.has(t.carpetaId));
   const tareasCompletadas = tareasUsuario.filter(t => t.estado === 'completada');
@@ -108,6 +115,23 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
                 }
               />
             )}
+            <View style={{ alignItems: 'center', marginTop: 24 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  logoutUsuario();
+                  router.replace('/');
+                }}
+                style={{
+                  backgroundColor: colores.accionEliminar,
+                  paddingVertical: 12,
+                  paddingHorizontal: 24,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Cerrar sesión</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
