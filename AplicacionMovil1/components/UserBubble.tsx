@@ -1,4 +1,5 @@
 import { useCustomColors } from '@/hooks/useCustomColors';
+import { useRouter } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CarpetaContext } from './CarpetaContext';
@@ -6,67 +7,76 @@ import TemaCambio from './SwitchTema';
 import { useTareas } from './TareasContext';
 import { useAuth } from './UsuarioContext';
 
-const mockUser = {
-  name: 'Juan Pérez',
-  email: 'juan.perez@email.com',
-  avatar: 'https://ui-avatars.com/api/?name=Juan+Pérez',
-};
-
 type UserBubbleProps = {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 };
 
 export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
-  const [visible, setVisible] = useState(false);
-  const colores = useCustomColors();
   const { usuarioActual } = useAuth();
+
+  if (!usuarioActual) {
+    // Si no hay usuario, mostramos mensaje de carga antes de usar otros hooks
+    const colores = useCustomColors();
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 18, color: colores.texto }}>Cargando o redirigiendo...</Text>
+      </View>
+    );
+  }
+
+  // A partir de acá es seguro usar el resto de hooks
+  const colores = useCustomColors();
   const { tareas } = useTareas();
   const carpetaContext = useContext(CarpetaContext);
   const carpetasUsuario = carpetaContext?.carpetas || [];
   const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
   const [mostrarRealizadas, setMostrarRealizadas] = useState(true);
   const [mostrarNoRealizadas, setMostrarNoRealizadas] = useState(true);
+  const { logoutUsuario } = useAuth();
+  const router = useRouter();
+  const [visible, setVisible] = useState(false);
 
-  if (!usuarioActual) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 18 }}>Cargando o redirigiendo...</Text>
-      </View>
-    );
-  }
-
-  // Filtrar tareas solo de las carpetas del usuario actual
   const tareasUsuario = tareas.filter(t => carpetasIdsUsuario.has(t.carpetaId));
   const tareasCompletadas = tareasUsuario.filter(t => t.estado === 'completada');
   const tareasTotales = tareasUsuario.length;
 
   return (
     <>
-      <TouchableOpacity style={styles.bubble} onPress={() => setVisible(true)}>
-        <View style={[styles.avatarContainer, { backgroundColor: colores.fondo }]}>
-          <Text style={styles.avatarText}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
+      <TouchableOpacity style={[styles.bubble, { backgroundColor: colores.accent }]} onPress={() => setVisible(true)}>
+        <View style={[styles.avatarContainer, { backgroundColor: colores.fondoSecundario, borderColor: colores.accent }]}>
+          <Text style={[styles.avatarText, { color: colores.textoSecundario }]}>
+            {usuarioActual.username[0]?.toUpperCase() || '?'}
+          </Text>
         </View>
       </TouchableOpacity>
+
       <Modal visible={visible} animationType="slide" transparent>
-        <View style={[styles.overlay,]}> 
-          <View style={[styles.drawer, { backgroundColor: colores.fondoUsuario, borderTopLeftRadius: 24, borderTopRightRadius: 24, minHeight: '60%' }]}> 
+        <View style={[styles.overlay]}>
+          <View style={[styles.drawer, { backgroundColor: colores.fondoUsuario }]}>
             <TouchableOpacity style={styles.closeBtn} onPress={() => setVisible(false)}>
-              <Text style={[styles.closeText,{ color : colores.texto} ]}>×</Text>
+              <Text style={[styles.closeText, { color: colores.texto }]}>×</Text>
             </TouchableOpacity>
+
             <View style={styles.userInfo}>
-              <View style={styles.avatarLarge}>
-                <Text style={[styles.avatarLargeText,{ color : colores.texto} ]}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
+              <View style={[styles.avatarLarge, { backgroundColor: colores.accent }]}>
+                <Text style={[styles.avatarLargeText, { color: colores.textoSecundario }]}>
+                  {usuarioActual.username[0]?.toUpperCase() || '?'}
+                </Text>
               </View>
               <Text style={[styles.userName, { color: colores.texto }]}>{usuarioActual.username}</Text>
-              <Text style={[styles.userEmail,{ color: colores.texto }]}>Tareas completadas ({tareasCompletadas.length}/{tareasTotales})</Text>
+              <Text style={[styles.userCantidadTotal, { color: colores.textoSecundario }]}>
+                Tareas completadas ({tareasCompletadas.length}/{tareasTotales})
+              </Text>
             </View>
-            <View style={{ alignItems: 'center', marginTop: 10 }}>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 12, marginBottom: 12 }}>
               <TemaCambio />
             </View>
+
             {/* Tareas realizadas colapsable */}
             <TouchableOpacity onPress={() => setMostrarRealizadas(v => !v)}>
-              <Text style={{ color: colores.texto, fontSize: 16, fontWeight: 'bold', marginTop: 12 }}>
+              <Text style={[styles.sectionTitle, { color: colores.accent }]}>
                 {mostrarRealizadas ? '▲' : '▼'} Tareas realizadas
               </Text>
             </TouchableOpacity>
@@ -74,13 +84,20 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
               <FlatList
                 data={tareasCompletadas}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => <Text style={[styles.taskDone, { color: colores.texto}]}>✔ {item.titulo}</Text>}
-                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.texto }]}>No hay tareas completadas.</Text>}
+                renderItem={({ item }) => (
+                  <View style={[styles.taskCard, { backgroundColor: colores.fondoSecundario }]}>
+                    <Text style={[styles.taskDone, { color: colores.accent }]}>✔ {item.titulo}</Text>
+                  </View>
+                )}
+                ListEmptyComponent={
+                  <Text style={[styles.emptyText, { color: colores.textoSecundario }]}>No hay tareas completadas.</Text>
+                }
               />
             )}
+
             {/* Tareas no realizadas colapsable */}
             <TouchableOpacity onPress={() => setMostrarNoRealizadas(v => !v)}>
-              <Text style={{ color: colores.texto, fontSize: 16, fontWeight: 'bold', marginTop: 12 }}>
+              <Text style={[styles.sectionTitle, { color: colores.accent }]}>
                 {mostrarNoRealizadas ? '▲' : '▼'} Tareas no realizadas
               </Text>
             </TouchableOpacity>
@@ -88,10 +105,33 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
               <FlatList
                 data={tareasUsuario.filter(t => t.estado !== 'completada')}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => <Text style={[styles.taskNotDone, { color: colores.texto }]}>✗ {item.titulo}</Text>}
-                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.accionEliminar }]}>No hay tareas pendientes.</Text>}
+                renderItem={({ item }) => (
+                  <View style={[styles.taskCard, { backgroundColor: colores.fondoSecundario }]}>
+                    <Text style={[styles.taskNotDone, { color: colores.error }]}>✗ {item.titulo}</Text>
+                  </View>
+                )}
+                ListEmptyComponent={
+                  <Text style={[styles.emptyText, { color: colores.error }]}>No hay tareas pendientes.</Text>
+                }
               />
             )}
+            <View style={{ alignItems: 'center', marginTop: 24 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  logoutUsuario();
+                  router.replace('/');
+                }}
+                style={{
+                  backgroundColor: colores.accionEliminar,
+                  paddingVertical: 12,
+                  paddingHorizontal: 24,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Cerrar sesión</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -104,101 +144,111 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#2196f3',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
+    elevation: 6,
     margin: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   avatarContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    fontSize: 20,
-    color: '#2196f3',
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '700',
   },
   overlay: {
     flex: 1,
-    backgroundColor: '#0008',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'flex-end',
   },
   drawer: {
-    backgroundColor: '#fff',
     padding: 24,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     minHeight: '60%',
-  },
-  drawerDark: {
-    backgroundColor: '#222',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 12,
   },
   closeBtn: {
     position: 'absolute',
-    right: 16,
-    top: 16,
-    zIndex: 1,
+    right: 20,
+    top: 20,
+    zIndex: 10,
   },
   closeText: {
-    fontSize: 28,
-    color: '#888',
+    fontSize: 32,
+    fontWeight: 'bold',
   },
   userInfo: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   avatarLarge: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#2196f3',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
   },
   avatarLargeText: {
-    fontSize: 36,
-    color: '#fff',
-    fontWeight: 'bold',
+    fontSize: 40,
+    fontWeight: '800',
   },
   userName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#222',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 4,
   },
-  userEmail: {
-    fontSize: 14,
-    color: '#666',
-  },
-  themeSwitch: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 16,
-  },
-  themeText: {
+  userCantidadTotal: {
     fontSize: 16,
-    color: '#222',
+    fontWeight: '500',
+    marginTop: 10,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 12,
-    color: '#2196f3',
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 18,
+    marginBottom: 8,
+  },
+  taskCard: {
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 6,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
   },
   taskDone: {
-    color: 'green',
-    marginLeft: 8,
-    marginVertical: 2,
+    fontSize: 16,
+    fontWeight: '600',
   },
   taskNotDone: {
-    color: 'red',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyText: {
+    fontSize: 14,
+    fontStyle: 'italic',
     marginLeft: 8,
-    marginVertical: 2,
   },
 });

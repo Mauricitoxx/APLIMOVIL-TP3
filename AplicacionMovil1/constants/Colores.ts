@@ -1,15 +1,18 @@
 export const Colores = {
   claro: {
     fondo: '#B4E6FD',
-    fondoUsuario: '#75d0fa',
-    texto: '#000000',
-    textoSecundario: "#666",
+    fondoUsuario: '#39bbf7',
+    texto: '#111111',
+    textoSecundario: '#444444',
     primario: "#4962f2",
     borde: '#dddddd',
     tarjeta: '#f5f5f5',
     icono: '#333333',
     inputFondo: "#f0f0f0",
     accionEliminar: "#e74c3c",
+    accent: '#1872ba',              
+    fondoSecundario: '#e6f0fa',     
+    error: '#e74c3c'
   },
   oscuro: {
     fondo: '#001223',
@@ -22,5 +25,8 @@ export const Colores = {
     icono: '#dddddd',
     inputFondo: "#1a1a1a",
     accionEliminar: "#ff6b6b",
+    accent: '#2196f3',              
+    fondoSecundario: '#12304a',     
+    error: '#ff6b6b',
   },
 };

@@ -35,121 +35,20 @@ export default function Login() {
         border: '#4962f2',
       };
 
-  const styles = StyleSheet.create({
-    bg: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    card: {
-      width: '90%',
-      borderRadius: 18,
-      padding: 28,
-      alignItems: 'center',
-      shadowColor: theme.primary,
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.15,
-      shadowRadius: 16,
-      elevation: 8,
-    },
-    title: {
-      fontSize: 28,
-      fontWeight: 'bold',
-      color: theme.primary,
-      marginBottom: 6,
-      textAlign: 'center',
-      letterSpacing: 1,
-    },
-    subtitle: {
-      fontSize: 15,
-      color: theme.textSecondary,
-      marginBottom: 18,
-      textAlign: 'center',
-    },
-    separator: {
-      width: 40,
-      height: 4,
-      backgroundColor: theme.primary,
-      borderRadius: 2,
-      marginBottom: 18,
-      opacity: 0.15,
-    },
-    input: {
-      width: '100%',
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 10,
-      padding: 14,
-      marginBottom: 14,
-      backgroundColor: theme.input,
-      color: theme.text,
-      fontSize: 16,
-    },
-    button: {
-      backgroundColor: theme.primary,
-      paddingVertical: 14,
-      borderRadius: 10,
-      alignItems: 'center',
-      width: '100%',
-      marginBottom: 10,
-      marginTop: 6,
-      shadowColor: theme.primary,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.18,
-      shadowRadius: 4,
-      elevation: 2,
-    },
-    buttonText: {
-      color: theme.buttonText,
-      fontWeight: 'bold',
-      fontSize: 17,
-      letterSpacing: 1,
-    },
-    error: {
-      color: '#d32f2f',
-      marginBottom: 10,
-      textAlign: 'center',
-      fontWeight: 'bold',
-    },
-    link: {
-      color: theme.primary,
-      textAlign: 'center',
-      marginTop: 8,
-      textDecorationLine: 'underline',
-      fontWeight: 'bold',
-      fontSize: 15,
-    },
-    switchRow: {
-      width: '100%',
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    switchLabel: {
-      color: theme.text,
-      marginRight: 8,
-      fontWeight: 'bold',
-    },
-      botonCrear: {
-    backgroundColor: "#4962f2",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-},
-      textoBotonCrear: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    letterSpacing: 1,
-},
-  });
+    const styles = StyleSheet.create({
+      bg: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+      card: { width: '90%', borderRadius: 18, padding: 28, alignItems: 'center', shadowColor: theme.primary, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 16, elevation: 8 },
+      title: { fontSize: 28, fontWeight: 'bold', color: theme.primary, marginBottom: 10, textAlign: 'center', letterSpacing: 1, marginTop: 10 },
+      subtitle: { fontSize: 17, marginBottom: 18, textAlign: 'center' },
+      separator: { width: 40, height: 4, backgroundColor: theme.primary, borderRadius: 2, marginBottom: 18, opacity: 0.15 },
+      input: { width: '100%', borderWidth: 1, borderColor: theme.border, borderRadius: 10, padding: 14, marginBottom: 14, backgroundColor: theme.input, color: theme.text, fontSize: 16 },
+      button: { backgroundColor: theme.primary, paddingVertical: 14, borderRadius: 10, alignItems: 'center', width: '100%', marginBottom: 10, marginTop: 6, shadowColor: theme.primary, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.18, shadowRadius: 4, elevation: 2 },
+      buttonText: { color: theme.buttonText, fontWeight: 'bold', fontSize: 17, letterSpacing: 1 },
+      error: { color: '#d32f2f', marginBottom: 10, textAlign: 'center', fontWeight: 'bold' },
+      link: { color: theme.primary, textAlign: 'center', marginTop: 20, textDecorationLine: 'underline', fontWeight: 'bold', fontSize: 18 },
+      switchRow: { width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
+      switchLabel: { color: theme.text, marginRight: 8, fontWeight: 'bold' },
+    });
 
   const handleLogin = () => {
     if (!username || !password) {
@@ -169,7 +68,6 @@ export default function Login() {
     <View style={[{ backgroundColor: colores.fondo }, styles.bg]}>
       <View style={[{ backgroundColor: colores.fondoUsuario }, styles.card]}>
         <View style={styles.switchRow}>
-          <Text style={[{ color : colores.texto}] }>{darkMode ? 'Oscuro' : 'Claro'}</Text>
               <TemaCambio />
         </View>
         <Text style={[{color : colores.texto}, styles.title]}>¡Bienvenido!</Text>
@@ -194,7 +92,7 @@ export default function Login() {
           placeholderTextColor={theme.textSecondary}
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Pressable style={styles.botonCrear} onPress={handleLogin}>
+        <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Ingresar</Text>
         </Pressable>
         <Pressable onPress={() => router.push('/Register')}>
