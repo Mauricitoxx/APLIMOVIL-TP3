@@ -1,3 +1,4 @@
+import { useCustomColors } from '@/hooks/useCustomColors';
 import React, { useContext, useState } from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import TemaCambio from './CambiarTemaC';
@@ -18,11 +19,14 @@ type UserBubbleProps = {
 
 export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
   const [visible, setVisible] = useState(false);
+  const colores = useCustomColors();
   const { usuarioActual } = useAuth();
   const { tareas } = useTareas();
   const carpetaContext = useContext(CarpetaContext);
   const carpetasUsuario = carpetaContext?.carpetas || [];
   const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
+  const [mostrarRealizadas, setMostrarRealizadas] = useState(true);
+  const [mostrarNoRealizadas, setMostrarNoRealizadas] = useState(true);
 
   if (!usuarioActual) {
     return (
@@ -40,40 +44,54 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
   return (
     <>
       <TouchableOpacity style={styles.bubble} onPress={() => setVisible(true)}>
-        <View style={styles.avatarContainer}>
+        <View style={[styles.avatarContainer, { backgroundColor: colores.fondo }]}>
           <Text style={styles.avatarText}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
         </View>
       </TouchableOpacity>
       <Modal visible={visible} animationType="slide" transparent>
-        <View style={styles.overlay}>
-          <View style={[styles.drawer, theme === 'dark' && styles.drawerDark]}>
+        <View style={[styles.overlay,]}> 
+          <View style={[styles.drawer, { backgroundColor: colores.fondoUsuario, borderTopLeftRadius: 24, borderTopRightRadius: 24, minHeight: '60%' }]}> 
             <TouchableOpacity style={styles.closeBtn} onPress={() => setVisible(false)}>
-              <Text style={styles.closeText}>×</Text>
+              <Text style={[styles.closeText,{ color : colores.texto} ]}>×</Text>
             </TouchableOpacity>
             <View style={styles.userInfo}>
               <View style={styles.avatarLarge}>
-                <Text style={styles.avatarLargeText}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
+                <Text style={[styles.avatarLargeText,{ color : colores.texto} ]}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
               </View>
-              <Text style={[styles.userName, theme === 'dark' && { color: '#fff' }]}>{usuarioActual.username}</Text>
-              <Text style={[styles.userEmail, theme === 'dark' && { color: '#ccc' }]}>Tareas completadas ({tareasCompletadas.length}/{tareasTotales})</Text>
+              <Text style={[styles.userName, { color: colores.texto }]}>{usuarioActual.username}</Text>
+              <Text style={[styles.userEmail,{ color: colores.texto }]}>Tareas completadas ({tareasCompletadas.length}/{tareasTotales})</Text>
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
               <TemaCambio />
             </View>
-            <Text style={styles.sectionTitle}>Tareas realizadas</Text>
-            <FlatList
-              data={tareasCompletadas}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => <Text style={styles.taskDone}>✔ {item.titulo}</Text>}
-              ListEmptyComponent={<Text style={styles.taskNotDone}>No hay tareas completadas.</Text>}
-            />
-            <Text style={styles.sectionTitle}>Tareas no realizadas</Text>
-            <FlatList
-              data={tareasUsuario.filter(t => t.estado !== 'completada')}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => <Text style={styles.taskNotDone}>✗ {item.titulo}</Text>}
-              ListEmptyComponent={<Text style={styles.taskNotDone}>No hay tareas pendientes.</Text>}
-            />
+            {/* Tareas realizadas colapsable */}
+            <TouchableOpacity onPress={() => setMostrarRealizadas(v => !v)}>
+              <Text style={{ color: colores.texto, fontSize: 16, fontWeight: 'bold', marginTop: 12 }}>
+                {mostrarRealizadas ? '▲' : '▼'} Tareas realizadas
+              </Text>
+            </TouchableOpacity>
+            {mostrarRealizadas && (
+              <FlatList
+                data={tareasCompletadas}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => <Text style={[styles.taskDone, { color: colores.done }]}>✔ {item.titulo}</Text>}
+                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.notDone }]}>No hay tareas completadas.</Text>}
+              />
+            )}
+            {/* Tareas no realizadas colapsable */}
+            <TouchableOpacity onPress={() => setMostrarNoRealizadas(v => !v)}>
+              <Text style={{ color: colores.texto, fontSize: 16, fontWeight: 'bold', marginTop: 12 }}>
+                {mostrarNoRealizadas ? '▲' : '▼'} Tareas no realizadas
+              </Text>
+            </TouchableOpacity>
+            {mostrarNoRealizadas && (
+              <FlatList
+                data={tareasUsuario.filter(t => t.estado !== 'completada')}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => <Text style={[styles.taskNotDone, { color: colores.notDone }]}>✗ {item.titulo}</Text>}
+                ListEmptyComponent={<Text style={[styles.taskNotDone, { color: colores.notDone }]}>No hay tareas pendientes.</Text>}
+              />
+            )}
           </View>
         </View>
       </Modal>
