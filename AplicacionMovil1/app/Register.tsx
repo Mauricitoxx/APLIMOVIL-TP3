@@ -1,8 +1,9 @@
+import TemaCambio from '@/components/CambiarTemaC';
+import { useCustomColors } from '@/hooks/useCustomColors';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, Switch, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../components/UsuarioContext'; 
-import { Stack } from 'expo-router';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAuth } from '../components/UsuarioContext';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ export default function Register() {
   const [localError, setLocalError] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
-
+  const colores = useCustomColors();
   const { registrarUsuario, isLoadingAuth, authError } = useAuth(); 
 
   const theme = darkMode
@@ -24,10 +25,10 @@ export default function Register() {
       };
 
   const styles = StyleSheet.create({
-    bg: { flex: 1, backgroundColor: theme.bg, justifyContent: 'center', alignItems: 'center' },
-    card: { width: '90%', backgroundColor: theme.card, borderRadius: 18, padding: 28, alignItems: 'center', shadowColor: theme.primary, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 16, elevation: 8 },
+    bg: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    card: { width: '90%', borderRadius: 18, padding: 28, alignItems: 'center', shadowColor: theme.primary, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 16, elevation: 8 },
     title: { fontSize: 28, fontWeight: 'bold', color: theme.primary, marginBottom: 6, textAlign: 'center', letterSpacing: 1 },
-    subtitle: { fontSize: 15, color: theme.textSecondary, marginBottom: 18, textAlign: 'center' },
+    subtitle: { fontSize: 15, marginBottom: 18, textAlign: 'center' },
     separator: { width: 40, height: 4, backgroundColor: theme.primary, borderRadius: 2, marginBottom: 18, opacity: 0.15 },
     input: { width: '100%', borderWidth: 1, borderColor: theme.border, borderRadius: 10, padding: 14, marginBottom: 14, backgroundColor: theme.input, color: theme.text, fontSize: 16 },
     button: { backgroundColor: theme.primary, paddingVertical: 14, borderRadius: 10, alignItems: 'center', width: '100%', marginBottom: 10, marginTop: 6, shadowColor: theme.primary, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.18, shadowRadius: 4, elevation: 2 },
@@ -56,21 +57,16 @@ export default function Register() {
   };
 
   return (
-    <View style={styles.bg}>
+    <View style={[{backgroundColor: colores.fondo }, styles.bg]}>
       <Stack.Screen options={{ title: 'Regístrate', headerShown: true }} />
 
-      <View style={styles.card}>
+      <View style={[{backgroundColor: colores.fondoUsuario }, styles.card]}>
         <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>{darkMode ? 'Oscuro' : 'Claro'}</Text>
-          <Switch
-            value={darkMode}
-            onValueChange={setDarkMode}
-            thumbColor={darkMode ? theme.primary : '#ccc'}
-            trackColor={{ false: '#ccc', true: theme.primary }}
-          />
+          <Text style={[{ color : colores.texto}] }>{darkMode ? 'Oscuro' : 'Claro'}</Text>
+              <TemaCambio />
         </View>
         <Text style={styles.title}>Crea tu Cuenta</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[{color: colores.texto}, styles.subtitle]}>
           Regístrate para organizar tus tareas y lograr tus objetivos diarios
         </Text>
         <View style={styles.separator} />

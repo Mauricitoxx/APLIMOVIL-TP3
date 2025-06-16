@@ -1,8 +1,9 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, Switch } from 'react-native';
+import TemaCambio from '@/components/CambiarTemaC';
+import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { UsuarioContext } from '../components/UsuarioContext'; // Importa el contexto
-
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -10,7 +11,7 @@ export default function Login() {
   const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
   const usuarioContext = useContext(UsuarioContext); // Usa el contexto
-
+  const colores = useCustomColors();
   // Paletas de colores para ambos modos
   const theme = darkMode
     ? {
@@ -37,13 +38,11 @@ export default function Login() {
   const styles = StyleSheet.create({
     bg: {
       flex: 1,
-      backgroundColor: theme.bg,
       justifyContent: 'center',
       alignItems: 'center',
     },
     card: {
       width: '90%',
-      backgroundColor: theme.card,
       borderRadius: 18,
       padding: 28,
       alignItems: 'center',
@@ -132,6 +131,24 @@ export default function Login() {
       marginRight: 8,
       fontWeight: 'bold',
     },
+      botonCrear: {
+    backgroundColor: "#4962f2",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+},
+      textoBotonCrear: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 1,
+},
   });
 
   const handleLogin = () => {
@@ -149,24 +166,19 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.bg}>
-      <View style={styles.card}>
+    <View style={[{ backgroundColor: colores.fondo }, styles.bg]}>
+      <View style={[{ backgroundColor: colores.fondoUsuario }, styles.card]}>
         <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>{darkMode ? 'Oscuro' : 'Claro'}</Text>
-          <Switch
-            value={darkMode}
-            onValueChange={setDarkMode}
-            thumbColor={darkMode ? theme.primary : '#ccc'}
-            trackColor={{ false: '#ccc', true: theme.primary }}
-          />
+          <Text style={[{ color : colores.texto}] }>{darkMode ? 'Oscuro' : 'Claro'}</Text>
+              <TemaCambio />
         </View>
-        <Text style={styles.title}>¡Bienvenido!</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[{color : colores.texto}, styles.title]}>¡Bienvenido!</Text>
+        <Text style={[styles.subtitle , {color: colores.texto}]}>
           Organiza tus tareas y logra tus objetivos diarios
         </Text>
         <View style={styles.separator} />
         <TextInput
-          style={styles.input}
+          style={[{color : colores.texto}, styles.input]}
           placeholder="Nombre de usuario"
           value={username}
           onChangeText={setUsername}
@@ -174,7 +186,7 @@ export default function Login() {
           placeholderTextColor={theme.textSecondary}
         />
         <TextInput
-          style={styles.input}
+          style={[{color : colores.texto}, styles.input]}
           placeholder="Contraseña"
           value={password}
           onChangeText={setPassword}
@@ -182,7 +194,7 @@ export default function Login() {
           placeholderTextColor={theme.textSecondary}
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Pressable style={styles.button} onPress={handleLogin}>
+        <Pressable style={styles.botonCrear} onPress={handleLogin}>
           <Text style={styles.buttonText}>Ingresar</Text>
         </Pressable>
         <Pressable onPress={() => router.push('/Register')}>

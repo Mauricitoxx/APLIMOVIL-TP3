@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../../components/CarpetaContext';
 export default function HomeScreen() {
   // Add this line to extract usuarioActual from context, if it exists
-  const { usuarioActual } =useContext(UsuarioContext);
+  const { usuarioActual } = useContext(UsuarioContext);
   const context = useContext(CarpetaContext);
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
