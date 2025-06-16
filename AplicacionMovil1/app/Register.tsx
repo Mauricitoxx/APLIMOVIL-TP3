@@ -1,4 +1,4 @@
-import TemaCambio from '@/components/CambiarTemaC';
+import TemaCambio from '@/components/SwitchTema';
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';

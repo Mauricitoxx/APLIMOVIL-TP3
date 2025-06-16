@@ -54,6 +54,7 @@ export default function TareaDetalle() {
         onEliminar={confirmarEliminacion}
         onCambiarEstado={() => handleCambioEstado(tarea.id)}
       />
+      
       <Modal
         animationType="fade"
         transparent={true}
