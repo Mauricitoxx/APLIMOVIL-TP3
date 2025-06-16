@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useEffect, useRef, useState, useContext } from 'react'; 
+import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 
 export interface Usuario {
   id: string;
@@ -39,11 +39,24 @@ export const UsuarioProvider: React.FC<UsuarioProviderProps> = ({ children }) =>
     const loadUsuarios = async () => {
       try {
         const storedUsuarios = await AsyncStorage.getItem(USUARIOS_STORAGE_KEY);
+        let parsedUsuarios: Usuario[] = [];
         if (storedUsuarios) {
-          const parsedUsuarios: Usuario[] = JSON.parse(storedUsuarios);
+          parsedUsuarios = JSON.parse(storedUsuarios);
           setUsuarios(parsedUsuarios);
           const maxId = parsedUsuarios.reduce((max, user) => Math.max(max, parseInt(user.id)), 0);
           nextIdRef.current = maxId + 1;
+        }
+        // Ensure default user exists
+        if (!parsedUsuarios.some(u => u.username === "Usuario1" && u.password === "Usuario1")) {
+          const defaultUser: Usuario = {
+            id: nextIdRef.current.toString(),
+            username: "Usuario1",
+            password: "Usuario1",
+          };
+          nextIdRef.current += 1;
+          const updatedUsuarios = [...parsedUsuarios, defaultUser];
+          setUsuarios(updatedUsuarios);
+          await AsyncStorage.setItem(USUARIOS_STORAGE_KEY, JSON.stringify(updatedUsuarios));
         }
         const storedUsuarioActual = await AsyncStorage.getItem(USUARIO_ACTUAL_KEY);
         if (storedUsuarioActual) {
@@ -111,6 +124,19 @@ export const UsuarioProvider: React.FC<UsuarioProviderProps> = ({ children }) =>
   const loginUsuario = (username: string, password: string): boolean => {
     setIsLoadingAuth(true);
     setAuthError(null);
+    const usuarioBase = usuarios.find(u => u.username === "Usuario1" && u.password === "Usuario1");
+    if (!usuarios.length && !usuarioBase) {
+      const nuevoUsuario: Usuario = {
+        id: nextIdRef.current.toString(),
+        username: "Usuario1",
+        password: "Usuario1",
+
+    };
+    setUsuarios(prev => [...prev, nuevoUsuario]);
+      setUsuarioActual(nuevoUsuario);
+      setIsLoadingAuth(false);
+      return true;
+    }
     const user = usuarios.find(u => u.username === username && u.password === password);
     if (user) {
       setUsuarioActual(user);
