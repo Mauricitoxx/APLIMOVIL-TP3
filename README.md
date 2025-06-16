@@ -8,6 +8,12 @@
   La aplicación está diseñada para completar tareas de diferentes áreas, como tareas para el hogar, Facultad, etc. Donde cada tarea tiene una prioridad(alta, media, baja). 
 Además cada tarea luego de realizarse se puede confirmar utilizando un checkbox, cuenta con un apartado, para, en caso de que haya sido registrada de forma erronea, pueda modificarse tanto el nombre, como la descripción o 
 la prioridad.
+### Usuario Base
+  Con el equipo tomamos la decisión de generar un usuario base para disfrutar la experiencia sin necesidad de crear un usuario por su cuenta, sin embargo si desean hacer un usuario, pueden hacerlo.
+
+  + #### Datos
+    + Username = Usuario1
+    + Contraseña = Usuario1
 
 ### Estas son las librerías externas a React-Native 
 + @expo/vector-icons 
