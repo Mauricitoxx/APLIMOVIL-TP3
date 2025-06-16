@@ -1,15 +1,24 @@
 import { Tarea } from '@/types/Tarea';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
-import { Carpeta } from '../types/Carpeta';
-import { UsuarioContext } from './UsuarioContext';
+import React, { createContext, ReactNode, useEffect, useRef, useState } from 'react';
+import { useAuth } from './UsuarioContext';
+
+export interface Carpeta {
+  id: string;
+  nombre: string;
+  color: string;
+  usuarioId: string; 
+}
+
+
 
 interface CarpetaContextType {
   carpetas: Carpeta[];
-  tareas: Tarea[];
+  tareas: Tarea[]; 
   agregarCarpeta: (nombre: string) => void;
   editarCarpeta: (id: string, nombre: string) => void;
   eliminarCarpeta: (id: string) => void;
+  borrarCarpetasSinUsuario: () => void; // <-- agregar tipo para la nueva función
 }
 
 export const CarpetaContext = createContext<CarpetaContextType | undefined>(undefined);
@@ -22,15 +31,15 @@ interface CarpetaProviderProps {
 }
 
 export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) => {
-  const [carpetas, setCarpetas] = useState<Carpeta[]>([]);
+  const [todasLasCarpetas, setTodasLasCarpetas] = useState<Carpeta[]>([]); 
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const nextIdRef = useRef<number>(1);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const colores_carpeta = ['#FF4B4B', '#4BC6FF', '#4BFF87', '#FFD34B', '#B84BFF'];
 
-  // Obtener usuario actual del contexto
-  const usuarioContext = useContext(UsuarioContext);
+  const { usuarioActual } = useAuth(); 
+ 
 
   useEffect(() => {
     const loadCarpetas = async () => {
@@ -39,11 +48,16 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
         const storedNextId = await AsyncStorage.getItem(NEXT_CARPETA_ID_KEY);
 
         if (storedCarpetas) {
-          setCarpetas(JSON.parse(storedCarpetas));
+
+          const parsedCarpetas: Carpeta[] = JSON.parse(storedCarpetas);
+          setTodasLasCarpetas(parsedCarpetas);
+
+          const maxId = parsedCarpetas.reduce((max, carpeta) => Math.max(max, parseInt(carpeta.id)), 0);
+          nextIdRef.current = maxId + 1;
+        } else {
+            nextIdRef.current = 1;
         }
-        if (storedNextId) {
-          nextIdRef.current = parseInt(storedNextId, 10);
-        }
+        
       } catch (error) {
         console.error("Error al cargar carpetas o el próximo ID de AsyncStorage:", error);
       } finally {
@@ -58,19 +72,27 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
     if (isLoaded) {
       const saveCarpetas = async () => {
         try {
-          await AsyncStorage.setItem(CARPETAS_STORAGE_KEY, JSON.stringify(carpetas));
+          await AsyncStorage.setItem(CARPETAS_STORAGE_KEY, JSON.stringify(todasLasCarpetas));
           await AsyncStorage.setItem(NEXT_CARPETA_ID_KEY, nextIdRef.current.toString());
-          console.log("Carpetas y próximo ID guardados en AsyncStorage.");
         } catch (error) {
           console.error("Error al guardar carpetas o el próximo ID en AsyncStorage:", error);
         }
       };
       saveCarpetas();
     }
-  }, [carpetas, isLoaded]);
+  }, [todasLasCarpetas, isLoaded]); 
+
+  const carpetasDelUsuario = React.useMemo(() => {
+    if (!usuarioActual) {
+      return []; 
+    }
+    return todasLasCarpetas.filter(carpeta => carpeta.usuarioId === usuarioActual.id);
+  }, [todasLasCarpetas, usuarioActual]);
+
+
 
   const agregarCarpeta = (nombre: string) => {
-    if (!usuarioContext?.usuarioActual) {
+    if (!usuarioActual) { 
       alert("Debes iniciar sesión para crear carpetas");
       return;
     }
@@ -78,17 +100,16 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
       id: nextIdRef.current.toString(),
       nombre: nombre,
       color: colores_carpeta[Math.floor(Math.random() * colores_carpeta.length)],
-      usuarioId: usuarioContext.usuarioActual.id, // Asocia la carpeta al usuario actual
+      usuarioId: usuarioActual.id, 
     };
     nextIdRef.current += 1;
 
-    setCarpetas((prevCarpetas) => [...prevCarpetas, nuevaCarpeta]);
-    console.log(`Carpeta "${nombre}" agregada con ID: ${nuevaCarpeta.id}. Próximo ID: ${nextIdRef.current}`);
+    setTodasLasCarpetas((prevCarpetas) => [...prevCarpetas, nuevaCarpeta]);
   };
 
   const editarCarpeta = (id: string, nuevo_nombre: string) => {
-    console.log("Editando carpeta:", id, nuevo_nombre);
-    setCarpetas(prev =>
+
+    setTodasLasCarpetas(prev =>
       prev.map(c =>
         c.id === id
           ? { ...c, nombre: nuevo_nombre }
@@ -98,20 +119,36 @@ export const CarpetaProvider: React.FC<CarpetaProviderProps> = ({ children }) =>
   };
 
   const eliminarCarpeta = (id: string) => {
-    console.log("Eliminando carpeta:", id);
-    setCarpetas((prev) => {
+    setTodasLasCarpetas((prev) => {
       const nuevas = prev.filter((carpeta) => carpeta.id !== id);
-      console.log("Carpetas sin eliminar:", nuevas);
       return nuevas
     });
   };
 
+  // Borra carpetas y sus tareas asociadas que no tienen usuarioId asignado
+  const borrarCarpetasSinUsuario = () => {
+    setTodasLasCarpetas(prevCarpetas => {
+      const carpetasConUsuario = prevCarpetas.filter(c => c.usuarioId && c.usuarioId !== '');
+      const idsConUsuario = new Set(carpetasConUsuario.map(c => c.id));
+      // Borra tareas asociadas a carpetas sin usuario
+      setTareas(prevTareas => prevTareas.filter(t => idsConUsuario.has(t.carpetaId)));
+      return carpetasConUsuario;
+    });
+  };
+
   if (!isLoaded) {
-    return null;
+    return null; 
   }
 
   return (
-    <CarpetaContext.Provider value={{ carpetas, tareas, agregarCarpeta, editarCarpeta, eliminarCarpeta }}>
+    <CarpetaContext.Provider value={{
+      carpetas: carpetasDelUsuario, 
+      tareas, 
+      agregarCarpeta,
+      editarCarpeta,
+      eliminarCarpeta,
+      borrarCarpetasSinUsuario // <-- exportar la función
+    }}>
       {children}
     </CarpetaContext.Provider>
   );

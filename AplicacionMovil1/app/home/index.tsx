@@ -1,29 +1,37 @@
-/* Index representa la Ventana Inicial (Home) */
-
-import TemaCambio from "@/components/CambiarTemaC";
 import CarpetaCard from "@/components/CarpetaCard";
 import { useTareas } from "@/components/TareasContext";
-import { useCustomTheme } from "@/components/TemaContext";
 import UserBubble from "@/components/UserBubble";
+import { UsuarioContext } from "@/components/UsuarioContext";
 import { useCustomColors } from '@/hooks/useCustomColors';
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarpetaContext } from '../../components/CarpetaContext';
-
-
-
 export default function HomeScreen() {
+  // Add this line to extract usuarioActual from context, if it exists
+  const { usuarioActual } =useContext(UsuarioContext);
   const context = useContext(CarpetaContext);
   const router = useRouter();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [carpetaIdToDelete, setCarpetaIdToDelete] = useState<string | null>(null);
   const colores = useCustomColors();
-  const { tema, toggleTheme } = useCustomTheme();
+
+  // Add theme state and toggle function
+  const [tema, setTema] = useState<'oscuro' | 'claro'>('claro');
+  const toggleTheme = () => setTema((prev) => (prev === 'oscuro' ? 'claro' : 'oscuro'));
 
   if (!context) {
     return <Text>Error: CarpetaContext no disponible.</Text>;
+  }
+
+  if (!usuarioActual) {
+    router.replace('/Login'); 
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: colores.texto, fontSize: 18 }}>Cargando o redirigiendo...</Text>
+      </SafeAreaView>
+    );
   }
 
   const confirmarEliminacionCarpeta = (id: string) => {
@@ -44,8 +52,8 @@ export default function HomeScreen() {
     setCarpetaIdToDelete(null);
   };
 
-  const { carpetas, eliminarCarpeta } = context;
-  const { tareas } = useTareas();
+  const { carpetas, eliminarCarpeta } = context; 
+  const { tareas } = useTareas(); 
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colores.fondo }}>
@@ -53,39 +61,39 @@ export default function HomeScreen() {
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 10 }}>
           <UserBubble theme={tema === 'oscuro' ? 'dark' : 'light'} toggleTheme={toggleTheme} />
         </View>
-        <View style={{ alignItems: 'center', marginTop: 10 }}>
-          <TemaCambio />
-        </View>
-        <Text style={[styles.header, { color : colores.texto }]}>Mis Carpetas</Text>
+        <Text style={[styles.header, { color: colores.texto }]}>Mis Carpetas</Text> 
         
-          <Pressable
-            style={styles.botonCrear}
-            onPress={() => router.push('/nueva-carpeta')}
-          >
-            <Text style={styles.textoBotonCrear}>Crear nueva carpeta</Text>
-          </Pressable>
+        <Pressable
+          style={styles.botonCrear}
+          onPress={() => router.push('/nueva-carpeta')}
+        >
+          <Text style={styles.textoBotonCrear}>Crear nueva carpeta</Text>
+        </Pressable>
 
         <FlatList
-          data={carpetas}
+          data={carpetas} 
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <CarpetaCard
               carpeta={item}
-              tareas={tareas.filter(t => t.carpetaId === item.id)}
+              tareas={tareas.filter(t => t.carpetaId === item.id)} 
               onEditar={(id) => router.push({ pathname: "/editar-carpeta/[id]", params: { id } })}
               onEliminar={(id) => confirmarEliminacionCarpeta(id)}
               onPress={(id) => router.push({ pathname: "/carpeta/[id]", params: { id } })}
             />
           )}
-          ListEmptyComponent={<Text>No hay carpetas creadas.</Text>}
+          ListEmptyComponent={
+            <Text style={{ textAlign: 'center', color: colores.textoSecundario, marginTop: 20 }}>
+              No tienes carpetas creadas. ¡Empieza creando una!
+            </Text>
+          }
         />
 
-        {/* MODAL DE CONFIRMACIÓN */}
         <Modal
           animationType="fade"
           transparent={true}
           visible={showConfirmModal}
-          onRequestClose={handleCancelDeleteCarpeta} // Para manejar el botón de retroceso en Android
+          onRequestClose={handleCancelDeleteCarpeta}
         >
           <View style={modalStyles.centeredView}>
             <View style={modalStyles.modalView}>
@@ -146,7 +154,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 1,
   },
-  modalOverlay: {
+
+  modalOverlay: { 
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -205,7 +214,7 @@ const modalStyles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     elevation: 2,
-    flex: 1, // Para que los botones ocupen espacio equitativamente
+    flex: 1,
     marginHorizontal: 5,
   },
   buttonCancel: {
@@ -220,4 +229,3 @@ const modalStyles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

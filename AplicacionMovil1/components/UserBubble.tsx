@@ -1,19 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import TemaCambio from './CambiarTemaC';
+import { CarpetaContext } from './CarpetaContext';
+import { useTareas } from './TareasContext';
+import { useAuth } from './UsuarioContext';
 
 const mockUser = {
   name: 'Juan Pérez',
   email: 'juan.perez@email.com',
   avatar: 'https://ui-avatars.com/api/?name=Juan+Pérez',
 };
-
-const mockTasks = [
-  { id: '1', title: 'Tarea 1', done: true },
-  { id: '2', title: 'Tarea 2', done: false },
-  { id: '3', title: 'Tarea 3', done: true },
-  { id: '4', title: 'Tarea 4', done: false },
-];
 
 type UserBubbleProps = {
   theme: 'light' | 'dark';
@@ -22,12 +18,30 @@ type UserBubbleProps = {
 
 export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
   const [visible, setVisible] = useState(false);
+  const { usuarioActual } = useAuth();
+  const { tareas } = useTareas();
+  const carpetaContext = useContext(CarpetaContext);
+  const carpetasUsuario = carpetaContext?.carpetas || [];
+  const carpetasIdsUsuario = new Set(carpetasUsuario.map(c => c.id));
+
+  if (!usuarioActual) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 18 }}>Cargando o redirigiendo...</Text>
+      </View>
+    );
+  }
+
+  // Filtrar tareas solo de las carpetas del usuario actual
+  const tareasUsuario = tareas.filter(t => carpetasIdsUsuario.has(t.carpetaId));
+  const tareasCompletadas = tareasUsuario.filter(t => t.estado === 'completada');
+  const tareasTotales = tareasUsuario.length;
 
   return (
     <>
       <TouchableOpacity style={styles.bubble} onPress={() => setVisible(true)}>
         <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>{mockUser.name[0]}</Text>
+          <Text style={styles.avatarText}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
         </View>
       </TouchableOpacity>
       <Modal visible={visible} animationType="slide" transparent>
@@ -38,25 +52,27 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
             </TouchableOpacity>
             <View style={styles.userInfo}>
               <View style={styles.avatarLarge}>
-                <Text style={styles.avatarLargeText}>{mockUser.name[0]}</Text>
+                <Text style={styles.avatarLargeText}>{usuarioActual.username[0]?.toUpperCase() || '?'}</Text>
               </View>
-              <Text style={[styles.userName, theme === 'dark' && { color: '#fff' }]}>{mockUser.name}</Text>
-              <Text style={[styles.userEmail, theme === 'dark' && { color: '#ccc' }]}>{mockUser.email}</Text>
+              <Text style={[styles.userName, theme === 'dark' && { color: '#fff' }]}>{usuarioActual.username}</Text>
+              <Text style={[styles.userEmail, theme === 'dark' && { color: '#ccc' }]}>Tareas completadas ({tareasCompletadas.length}/{tareasTotales})</Text>
             </View>
-                    <View style={{ alignItems: 'center', marginTop: 10 }}>
-                      <TemaCambio />
-                    </View>
+            <View style={{ alignItems: 'center', marginTop: 10 }}>
+              <TemaCambio />
+            </View>
             <Text style={styles.sectionTitle}>Tareas realizadas</Text>
             <FlatList
-              data={mockTasks.filter(t => t.done)}
+              data={tareasCompletadas}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <Text style={styles.taskDone}>✔ {item.title}</Text>}
+              renderItem={({ item }) => <Text style={styles.taskDone}>✔ {item.titulo}</Text>}
+              ListEmptyComponent={<Text style={styles.taskNotDone}>No hay tareas completadas.</Text>}
             />
             <Text style={styles.sectionTitle}>Tareas no realizadas</Text>
             <FlatList
-              data={mockTasks.filter(t => !t.done)}
+              data={tareasUsuario.filter(t => t.estado !== 'completada')}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <Text style={styles.taskNotDone}>✗ {item.title}</Text>}
+              renderItem={({ item }) => <Text style={styles.taskNotDone}>✗ {item.titulo}</Text>}
+              ListEmptyComponent={<Text style={styles.taskNotDone}>No hay tareas pendientes.</Text>}
             />
           </View>
         </View>
