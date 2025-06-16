@@ -12,7 +12,8 @@ export default function Login() {
   const router = useRouter();
   const usuarioContext = useContext(UsuarioContext); 
   const colores = useCustomColors();
-  // Paletas de colores para ambos modos
+  
+  // Paletas de color particular para Login y Registro para ambos modos
   const theme = darkMode
     ? {
         bg: '#181c25',

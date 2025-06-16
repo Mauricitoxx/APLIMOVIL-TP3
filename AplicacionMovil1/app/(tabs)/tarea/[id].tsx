@@ -124,14 +124,14 @@ const modalStyles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     elevation: 2,
-    flex: 1, // Para que los botones ocupen espacio equitativamente
+    flex: 1, 
     marginHorizontal: 5,
   },
   buttonConfirm: {
-    backgroundColor: '#FF6347', // Color rojo para confirmar eliminación
+    backgroundColor: '#FF6347',
   },
   buttonCancel: {
-    backgroundColor: '#A9A9A9', // Color gris para cancelar
+    backgroundColor: '#A9A9A9',
   },
   textStyle: {
     color: 'white',

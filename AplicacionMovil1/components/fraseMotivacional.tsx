@@ -42,16 +42,16 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: "rgba(0, 0, 0, 0)", // Color de fondo con opacidad
+    backgroundColor: "rgba(0, 0, 0, 0)", 
     borderRadius: 8,
-    marginBottom: -130, // Ajuste para que se vea bien en la pantalla
+    marginBottom: -130, 
   },
   cita: {
     textAlign: "center",
     fontStyle: "italic",
     fontSize: 26,
     fontWeight: "bold",
-    color: "rgb(255, 255, 255)", // Color de texto con opacidad
+    color: "rgb(255, 255, 255)", 
     marginBottom: 10,
   },
   autor: {

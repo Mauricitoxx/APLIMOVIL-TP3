@@ -14,6 +14,7 @@ export default function Register() {
   const colores = useCustomColors();
   const { registrarUsuario, isLoadingAuth, authError } = useAuth(); 
 
+  // Paletas de color particular para Login y Registro para ambos modos
   const theme = darkMode
     ? { 
         bg: '#181c25', card: '#23283a', primary: '#8fa7ff', text: '#fff', 

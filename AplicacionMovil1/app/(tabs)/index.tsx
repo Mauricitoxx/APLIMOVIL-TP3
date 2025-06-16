@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 2,
-    pointerEvents: 'none', // Permite que los botones sigan siendo clickeables
+    pointerEvents: 'none', 
   },
   fraseText: {
     color: '#fff',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     gap: 16, 
   },
   transparentButton: {
-    backgroundColor: 'rgb(255, 255, 255)', // completamente transparente
+    backgroundColor: 'rgb(255, 255, 255)',
     borderWidth: 2,
     borderColor: '#fff',
     borderRadius: 10,

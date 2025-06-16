@@ -20,7 +20,7 @@ export default function EditarCarpeta() {
 
     useEffect(() => {
         if (carpeta) {
-            setNombreCarpeta(carpeta.nombre); // Carga el nombre actual al abrir
+            setNombreCarpeta(carpeta.nombre);
         }
     }, [carpeta]);
 
