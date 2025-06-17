@@ -71,7 +71,6 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
               <TemaCambio />
             </View>
 
-            {/* Tareas realizadas colapsable */}
             <TouchableOpacity onPress={() => setMostrarRealizadas(v => !v)}>
               <Text style={[styles.sectionTitle, { color: colores.accent }]}>
                 {mostrarRealizadas ? '▲' : '▼'} Tareas realizadas
@@ -92,7 +91,6 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
               />
             )}
 
-            {/* Tareas no realizadas colapsable */}
             <TouchableOpacity onPress={() => setMostrarNoRealizadas(v => !v)}>
               <Text style={[styles.sectionTitle, { color: colores.accent }]}>
                 {mostrarNoRealizadas ? '▲' : '▼'} Tareas no realizadas
@@ -115,11 +113,8 @@ export default function UserBubble({ theme, toggleTheme }: UserBubbleProps) {
             <View style={{ alignItems: 'center', marginTop: 24 }}>
               <TouchableOpacity
                 onPress={() => {
-                  setVisible(false);
-                  setTimeout(() => {
                     logoutUsuario();
                     router.replace('/');
-                  }, 300);
                 }}
                 style={{
                   backgroundColor: colores.accionEliminar,

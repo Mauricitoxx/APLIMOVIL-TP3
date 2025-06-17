@@ -100,9 +100,11 @@ export default function CarpetaDetalle() {
         confettiTimeouts.current.forEach(clearTimeout);
         confettiTimeouts.current = [];
         confettiTimeouts.current.push(
+          //@ts-ignore
           setTimeout(() => setConfettiKeys(keys => [...keys, Date.now() + 1]), 500)
         );
         confettiTimeouts.current.push(
+          //@ts-ignore
           setTimeout(() => setConfettiKeys(keys => [...keys, Date.now() + 2]), 1000)
         );
         setShowCongrats(true);
@@ -258,7 +260,8 @@ export default function CarpetaDetalle() {
           fadeOut={true}
           autoStart={true}
           colors={["#2ecc71", "#f9a825", "#d32f2f", "#4cd137"]}
-          emojis={["🎉", "✨", "🔥", "🥳", "🎊"]}
+          //@ts-ignore
+          emojis={["🎉", "✨", "🔥", "🎊"]}
         />
       ))}
 
